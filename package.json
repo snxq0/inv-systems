@@ -1,0 +1,23 @@
+{
+  "name": "inv-systems",
+  "version": "1.0.0",
+  "main": "booking.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snxq0/inv-systems.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/snxq0/inv-systems/issues"
+  },
+  "homepage": "https://github.com/snxq0/inv-systems#readme",
+  "description": "",
+  "dependencies": {
+    "nodemailer": "^10.0.12"
+  }
+}

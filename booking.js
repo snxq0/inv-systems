@@ -4,21 +4,37 @@ const formSuccess = document.querySelector("#form-success");
 bookingForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    const submitButton = bookingForm.querySelector(".submit-button");
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending...";
+
     const formData = new FormData(bookingForm);
 
-    console.log(Object.fromEntries(formData));
+    const data = Object.fromEntries(formData.entries());
 
-    /*
-        Здесь позже будет serverless endpoint.
-
-        Например:
-
+    try {
         const response = await fetch("/api/booking", {
             method: "POST",
-            body: formData
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         });
-    */
 
-    bookingForm.style.display = "none";
-    formSuccess.classList.add("active");
+        if (!response.ok) {
+            throw new Error("Request failed");
+        }
+
+        bookingForm.style.display = "none";
+        formSuccess.classList.add("active");
+
+    } catch (error) {
+        console.error(error);
+
+        submitButton.disabled = false;
+        submitButton.textContent = "Send inquiry →";
+
+        alert("Something went wrong. Please try again.");
+    }
 });
