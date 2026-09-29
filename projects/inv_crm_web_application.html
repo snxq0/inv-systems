@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#111111]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INV CRM — Minimalist Service Business System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        inv: {
+                            bg: '#171717',
+                            deep: '#111111',
+                            card: '#1C1C1C',
+                            cardHover: '#232323',
+                            border: '#2A2A2A',
+                            borderHover: '#3A3A3A',
+                            text: '#F2F2F0',
+                            muted: '#A3A3A3',
+                            accent: '#5B4B78',
+                            accentHover: '#6C5A8F',
+                            accentSoft: 'rgba(91, 75, 120, 0.2)',
+                            green: '#3E7B5C',
+                            greenSoft: 'rgba(62, 123, 92, 0.15)',
+                            amber: '#9E7437',
+                            amberSoft: 'rgba(158, 116, 55, 0.15)',
+                            red: '#8A3B3B',
+                            redSoft: 'rgba(138, 59, 59, 0.15)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #171717;
+            color: #F2F2F0;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom subtle scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2A2A2A;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3A3A3A;
+        }
+        /* Modal Transition Utility */
+        .modal-backdrop {
+            background-color: rgba(10, 10, 10, 0.75);
+            backdrop-filter: blur(2px);
+        }
+        /* Hide scrollbars for visual cleanliness */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col md:flex-row overflow-hidden select-none">
+
+    <!-- Desktop Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-[#111111] border-r border-[#2A2A2A] flex flex-col justify-between flex-shrink-0 z-20 md:h-screen">
+        <div>
+            <!-- Brand Logo -->
+            <div class="p-6 border-b border-[#2A2A2A] flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-7 h-7 bg-[#5B4B78] rounded flex items-center justify-center font-bold text-xs tracking-wider text-[#F2F2F0]">INV</div>
+                    <span class="text-sm font-semibold tracking-wide text-[#F2F2F0]">INV CRM</span>
+                </div>
+                <span class="text-[10px] uppercase font-mono tracking-widest px-2 py-0.5 rounded border border-[#2A2A2A] text-[#A3A3A3]">v1.0</span>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-4 space-y-1">
+                <button onclick="switchView('overview')" id="nav-overview" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors text-[#F2F2F0] bg-[#1C1C1C] border border-[#2A2A2A]">
+                    <svg class="w-4 h-4 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                    <span>Overview</span>
+                </button>
+                <button onclick="switchView('clients')" id="nav-clients" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors text-[#A3A3A3] hover:text-[#F2F2F0] hover:bg-[#1C1C1C]/50 border border-transparent">
+                    <svg class="w-4 h-4 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 100 8.292 4 4 0 000-8.292zM15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <span>Clients</span>
+                </button>
+                <button onclick="switchView('sessions')" id="nav-sessions" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors text-[#A3A3A3] hover:text-[#F2F2F0] hover:bg-[#1C1C1C]/50 border border-transparent">
+                    <svg class="w-4 h-4 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span>Sessions</span>
+                </button>
+                <button onclick="switchView('payments')" id="nav-payments" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors text-[#A3A3A3] hover:text-[#F2F2F0] hover:bg-[#1C1C1C]/50 border border-transparent">
+                    <svg class="w-4 h-4 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Payments</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- System Footer / Reset -->
+        <div class="p-4 border-t border-[#2A2A2A] space-y-3">
+            <div class="text-[11px] text-[#A3A3A3] px-2 leading-relaxed">
+                <span class="block text-[#F2F2F0] font-medium mb-0.5">Minimalism is the loudest.</span>
+                Clients, sessions, and payments brought together.
+            </div>
+            <button onclick="confirmResetData()" class="w-full text-left px-2 py-1.5 rounded text-[11px] text-[#A3A3A3] hover:text-[#F2F2F0] hover:bg-[#1C1C1C] transition-colors flex items-center space-x-2">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <span>Reset Demo Data</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Work Area -->
+    <main class="flex-1 overflow-y-auto bg-[#171717] relative flex flex-col h-screen">
+
+        <!-- Top Bar Action Container -->
+        <header class="sticky top-0 z-10 bg-[#171717]/90 backdrop-blur border-b border-[#2A2A2A] px-6 py-4 flex items-center justify-between">
+            <div>
+                <h1 id="page-title" class="text-base font-semibold text-[#F2F2F0]">Overview</h1>
+                <p id="page-subtitle" class="text-xs text-[#A3A3A3] mt-0.5">What is happening in your business</p>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="openModal('modal-session')" class="px-3 py-1.5 bg-[#5B4B78] hover:bg-[#6C5A8F] text-[#F2F2F0] rounded text-xs font-medium transition-colors flex items-center space-x-1.5 shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Schedule Session</span>
+                </button>
+                <button onclick="openModal('modal-client')" class="px-3 py-1.5 bg-[#1C1C1C] hover:bg-[#232323] border border-[#2A2A2A] hover:border-[#3A3A3A] text-[#F2F2F0] rounded text-xs font-medium transition-colors">
+                    + New Client
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Body -->
+        <div class="p-6 space-y-6 flex-1">
+
+            <!-- VIEW 1: OVERVIEW -->
+            <section id="view-overview" class="view-panel space-y-6">
+                <!-- Calculated KPIs Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg p-4">
+                        <div class="text-xs font-medium text-[#A3A3A3]">Monthly Revenue</div>
+                        <div id="kpi-revenue" class="text-2xl font-bold text-[#F2F2F0] mt-2">$0</div>
+                        <div class="text-[11px] text-[#A3A3A3] mt-1">Calculated from completed sessions</div>
+                    </div>
+                    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg p-4">
+                        <div class="text-xs font-medium text-[#A3A3A3]">Active Clients</div>
+                        <div id="kpi-clients" class="text-2xl font-bold text-[#F2F2F0] mt-2">0</div>
+                        <div class="text-[11px] text-[#A3A3A3] mt-1">Recurring service clients</div>
+                    </div>
+                    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg p-4">
+                        <div class="text-xs font-medium text-[#A3A3A3]">Sessions This Month</div>
+                        <div id="kpi-sessions" class="text-2xl font-bold text-[#F2F2F0] mt-2">0</div>
+                        <div class="text-[11px] text-[#A3A3A3] mt-1" id="kpi-sessions-breakdown">0 scheduled / 0 completed</div>
+                    </div>
+                    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg p-4">
+                        <div class="text-xs font-medium text-[#A3A3A3]">Pending Revenue</div>
+                        <div id="kpi-pending" class="text-2xl font-bold text-[#F2F2F0] mt-2">$0</div>
+                        <div class="text-[11px] text-[#A3A3A3] mt-1">Uncollected pending payments</div>
+                    </div>
+                </div>
+
+                <!-- Next Up: Immediate Scheduled Sessions List -->
+                <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+                        <div>
+                            <h2 class="text-sm font-semibold text-[#F2F2F0]">Next Up</h2>
+                            <p class="text-xs text-[#A3A3A3]">Upcoming scheduled sessions</p>
+                        </div>
+                        <button onclick="switchView('sessions')" class="text-xs text-[#A3A3A3] hover:text-[#F2F2F0] transition-colors">View All &rarr;</button>
+                    </div>
+
+                    <div id="overview-upcoming-list" class="divide-y divide-[#2A2A2A]">
+                        <!-- Dynamic JS Injection -->
+                    </div>
+                </div>
+
+                <!-- Recent Activity / Minimal Log -->
+                <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg p-5">
+                    <div class="flex items-center justify-between border-b border-[#2A2A2A] pb-3 mb-3">
+                        <h2 class="text-sm font-semibold text-[#F2F2F0]">Recent Payments Log</h2>
+                        <button onclick="switchView('payments')" class="text-xs text-[#A3A3A3] hover:text-[#F2F2F0] transition-colors">View All &rarr;</button>
+                    </div>
+                    <div id="overview-recent-payments" class="divide-y divide-[#2A2A2A]">
+                        <!-- Dynamic JS Injection -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: CLIENTS -->
+            <section id="view-clients" class="view-panel space-y-4 hidden">
+                <!-- Search and Action Bar -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#1C1C1C] border border-[#2A2A2A] p-3 rounded-lg">
+                    <div class="relative flex-1">
+                        <svg class="w-4 h-4 absolute left-3 top-2.5 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="client-search" oninput="renderClientsView()" placeholder="Search clients by name or email..." class="w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#5B4B78] outline-none text-xs rounded pl-9 pr-3 py-2 text-[#F2F2F0] placeholder-[#A3A3A3]">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <select id="client-filter-status" onchange="renderClientsView()" class="bg-[#111111] border border-[#2A2A2A] text-xs text-[#F2F2F0] rounded px-3 py-2 outline-none">
+                            <option value="all">All Statuses</option>
+                            <option value="Active">Active</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                        <button onclick="openModal('modal-client')" class="px-3 py-2 bg-[#5B4B78] hover:bg-[#6C5A8F] text-[#F2F2F0] text-xs font-medium rounded transition-colors whitespace-nowrap">
+                            + Add Client
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-[#2A2A2A] text-[11px] uppercase tracking-wider text-[#A3A3A3] bg-[#111111]/50">
+                                <th class="py-3 px-4 font-semibold">Client Name</th>
+                                <th class="py-3 px-4 font-semibold">Contact Email</th>
+                                <th class="py-3 px-4 font-semibold">Service Role</th>
+                                <th class="py-3 px-4 font-semibold">Status</th>
+                                <th class="py-3 px-4 font-semibold">Total Sessions</th>
+                                <th class="py-3 px-4 font-semibold">Total Paid</th>
+                                <th class="py-3 px-4 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clients-table-body" class="divide-y divide-[#2A2A2A] text-xs">
+                            <!-- Dynamic Injection -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VIEW 3: SESSIONS -->
+            <section id="view-sessions" class="view-panel space-y-4 hidden">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#1C1C1C] border border-[#2A2A2A] p-3 rounded-lg">
+                    <div class="relative flex-1">
+                        <svg class="w-4 h-4 absolute left-3 top-2.5 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="session-search" oninput="renderSessionsView()" placeholder="Filter by client name..." class="w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#5B4B78] outline-none text-xs rounded pl-9 pr-3 py-2 text-[#F2F2F0] placeholder-[#A3A3A3]">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <select id="session-filter-status" onchange="renderSessionsView()" class="bg-[#111111] border border-[#2A2A2A] text-xs text-[#F2F2F0] rounded px-3 py-2 outline-none">
+                            <option value="all">All Statuses</option>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <button onclick="openModal('modal-session')" class="px-3 py-2 bg-[#5B4B78] hover:bg-[#6C5A8F] text-[#F2F2F0] text-xs font-medium rounded transition-colors whitespace-nowrap">
+                            + Schedule Session
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-[#2A2A2A] text-[11px] uppercase tracking-wider text-[#A3A3A3] bg-[#111111]/50">
+                                <th class="py-3 px-4 font-semibold">Client</th>
+                                <th class="py-3 px-4 font-semibold">Date & Time</th>
+                                <th class="py-3 px-4 font-semibold">Price</th>
+                                <th class="py-3 px-4 font-semibold">Status</th>
+                                <th class="py-3 px-4 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sessions-table-body" class="divide-y divide-[#2A2A2A] text-xs">
+                            <!-- Dynamic Injection -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VIEW 4: PAYMENTS -->
+            <section id="view-payments" class="view-panel space-y-4 hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-4 rounded-lg flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-[#A3A3A3]">Total Collected</span>
+                            <div id="payment-metric-collected" class="text-xl font-bold text-[#F2F2F0] mt-0.5">$0</div>
+                        </div>
+                        <div class="w-2 h-2 rounded-full bg-[#3E7B5C]"></div>
+                    </div>
+                    <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-4 rounded-lg flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-[#A3A3A3]">Total Outstanding</span>
+                            <div id="payment-metric-pending" class="text-xl font-bold text-[#F2F2F0] mt-0.5">$0</div>
+                        </div>
+                        <div class="w-2 h-2 rounded-full bg-[#9E7437]"></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#1C1C1C] border border-[#2A2A2A] p-3 rounded-lg">
+                    <div class="relative flex-1">
+                        <svg class="w-4 h-4 absolute left-3 top-2.5 text-[#A3A3A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="payment-search" oninput="renderPaymentsView()" placeholder="Filter payments by client..." class="w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#5B4B78] outline-none text-xs rounded pl-9 pr-3 py-2 text-[#F2F2F0] placeholder-[#A3A3A3]">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <select id="payment-filter-status" onchange="renderPaymentsView()" class="bg-[#111111] border border-[#2A2A2A] text-xs text-[#F2F2F0] rounded px-3 py-2 outline-none">
+                            <option value="all">All Payments</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                        <button onclick="openModal('modal-payment')" class="px-3 py-2 bg-[#5B4B78] hover:bg-[#6C5A8F] text-[#F2F2F0] text-xs font-medium rounded transition-colors whitespace-nowrap">
+                            + Record Payment
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-lg overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-[#2A2A2A] text-[11px] uppercase tracking-wider text-[#A3A3A3] bg-[#111111]/50">
+                                <th class="py-3 px-4 font-semibold">Client</th>
+                                <th class="py-3 px-4 font-semibold">Date</th>
+                                <th class="py-3 px-4 font-semibold">Amount</th>
+                                <th class="py-3 px-4 font-semibold">Status</th>
+                                <th class="py-3 px-4 font-semibold text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payments-table-body" class="divide-y divide-[#2A2A2A] text-xs">
+                            <!-- Dynamic Injection -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL 1: CLIENT DETAILS SLIDE-OVER / MODAL -->
+    <div id="modal-client-details" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-[#2A2A2A] flex items-center justify-between bg-[#111111]">
+                <div>
+                    <div class="flex items-center space-x-3">
+                        <h2 id="detail-client-name" class="text-base font-bold text-[#F2F2F0]">Client Name</h2>
+                        <span id="detail-client-status" class="px-2 py-0.5 text-[10px] rounded border uppercase font-medium">Active</span>
+                    </div>
+                    <p id="detail-client-role-email" class="text-xs text-[#A3A3A3] mt-1">Role &bull; email@domain.com</p>
+                </div>
+                <button onclick="closeModal('modal-client-details')" class="text-[#A3A3A3] hover:text-[#F2F2F0] p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-6 overflow-y-auto space-y-6 text-xs">
+                <!-- Notes Section -->
+                <div>
+                    <label class="block text-xs font-medium text-[#A3A3A3] mb-2">Internal Client Notes</label>
+                    <textarea id="detail-client-notes" rows="3" placeholder="Add specific needs, background, goal milestones..." class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-3 text-[#F2F2F0] outline-none focus:border-[#5B4B78] transition-colors resize-none"></textarea>
+                    <div class="flex justify-end mt-2">
+                        <button onclick="saveClientNotes()" class="px-3 py-1 bg-[#2A2A2A] hover:bg-[#3A3A3A] text-[#F2F2F0] rounded text-xs transition-colors">Save Notes</button>
+                    </div>
+                </div>
+
+                <!-- Next Upcoming Session Highlight -->
+                <div class="bg-[#111111] border border-[#2A2A2A] p-4 rounded-lg">
+                    <div class="text-[11px] font-semibold text-[#A3A3A3] uppercase tracking-wider mb-2">Next Session</div>
+                    <div id="detail-upcoming-session-box" class="flex items-center justify-between">
+                        <!-- Dynamic Injection -->
+                    </div>
+                </div>
+
+                <!-- Session History Tabbed Block -->
+                <div>
+                    <div class="border-b border-[#2A2A2A] pb-2 mb-3 flex items-center justify-between">
+                        <h3 class="text-xs font-semibold text-[#F2F2F0]">Session History</h3>
+                        <button id="detail-quick-schedule-btn" class="text-xs text-[#5B4B78] hover:underline">+ Schedule for client</button>
+                    </div>
+                    <div class="border border-[#2A2A2A] rounded overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-[#111111] text-[#A3A3A3] text-[10px] uppercase">
+                                <tr>
+                                    <th class="p-2.5">Date & Time</th>
+                                    <th class="p-2.5">Price</th>
+                                    <th class="p-2.5">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-sessions-list" class="divide-y divide-[#2A2A2A]">
+                                <!-- Dynamic Injection -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Payment History Tabbed Block -->
+                <div>
+                    <div class="border-b border-[#2A2A2A] pb-2 mb-3 flex items-center justify-between">
+                        <h3 class="text-xs font-semibold text-[#F2F2F0]">Payment Records</h3>
+                        <button id="detail-quick-payment-btn" class="text-xs text-[#5B4B78] hover:underline">+ Record Payment</button>
+                    </div>
+                    <div class="border border-[#2A2A2A] rounded overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-[#111111] text-[#A3A3A3] text-[10px] uppercase">
+                                <tr>
+                                    <th class="p-2.5">Date</th>
+                                    <th class="p-2.5">Amount</th>
+                                    <th class="p-2.5">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-payments-list" class="divide-y divide-[#2A2A2A]">
+                                <!-- Dynamic Injection -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD NEW CLIENT -->
+    <div id="modal-client" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+                <h3 class="text-sm font-semibold text-[#F2F2F0]">Add New Client</h3>
+                <button onclick="closeModal('modal-client')" class="text-[#A3A3A3] hover:text-[#F2F2F0]">&times;</button>
+            </div>
+            <form onsubmit="handleCreateClient(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Full Name</label>
+                    <input type="text" id="form-client-name" required placeholder="e.g. Marcus Chen" class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                </div>
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Email Address</label>
+                    <input type="email" id="form-client-email" required placeholder="marcus@example.com" class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                </div>
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Service / Profession Role</label>
+                    <input type="text" id="form-client-role" required placeholder="e.g. SAT Math Prep / Consulting" class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                </div>
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('modal-client')" class="px-3 py-2 bg-[#111111] border border-[#2A2A2A] rounded text-[#A3A3A3] hover:text-[#F2F2F0]">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-[#5B4B78] hover:bg-[#6C5A8F] text-[#F2F2F0] rounded font-medium">Save Client</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: SCHEDULE SESSION -->
+    <div id="modal-session" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+                <h3 class="text-sm font-semibold text-[#F2F2F0]">Schedule Session</h3>
+                <button onclick="closeModal('modal-session')" class="text-[#A3A3A3] hover:text-[#F2F2F0]">&times;</button>
+            </div>
+            <form onsubmit="handleCreateSession(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Select Client</label>
+                    <select id="form-session-client" required class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                        <!-- Dynamic options -->
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[#A3A3A3] mb-1">Date</label>
+                        <input type="date" id="form-session-date" required class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                    </div>
+                    <div>
+                        <label class="block text-[#A3A3A3] mb-1">Time</label>
+                        <input type="time" id="form-session-time" required value="10:00" class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Session Price ($)</label>
+                    <input type="number" id="form-session-price" required min="0" value="150" class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                </div>
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('modal-session')" class="px-3 py-2 bg-[#111111] border border-[#2A2A2A] rounded text-[#A3A3A3] hover:text-[#F2F2F0]">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-[#5B4B78] hover:bg-[#6C5A8F] text-[#F2F2F0] rounded font-medium">Schedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: RECORD PAYMENT -->
+    <div id="modal-payment" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+                <h3 class="text-sm font-semibold text-[#F2F2F0]">Record Payment</h3>
+                <button onclick="closeModal('modal-payment')" class="text-[#A3A3A3] hover:text-[#F2F2F0]">&times;</button>
+            </div>
+            <form onsubmit="handleCreatePayment(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Select Client</label>
+                    <select id="form-payment-client" required class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                        <!-- Dynamic options -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Amount ($)</label>
+                    <input type="number" id="form-payment-amount" required min="0" value="200" class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                </div>
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Date</label>
+                    <input type="date" id="form-payment-date" required class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                </div>
+                <div>
+                    <label class="block text-[#A3A3A3] mb-1">Payment Status</label>
+                    <select id="form-payment-status" class="w-full bg-[#111111] border border-[#2A2A2A] rounded p-2 text-[#F2F2F0] outline-none focus:border-[#5B4B78]">
+                        <option value="Paid">Paid</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('modal-payment')" class="px-3 py-2 bg-[#111111] border border-[#2A2A2A] rounded text-[#A3A3A3] hover:text-[#F2F2F0]">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-[#5B4B78] hover:bg-[#6C5A8F] text-[#F2F2F0] rounded font-medium">Record Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <script>
+        /* ==========================================================================
+           INV CRM STATE & MOCK DATA STORAGE ARCHITECTURE
+           ========================================================================== */
+
+        const STORAGE_KEY = 'INV_CRM_APP_DATA_V1';
+
+        const INITIAL_DEMO_DATA = {
+            clients: [
+                { id: 'c1', name: 'Elena Rostova', email: 'elena.r@execgrowth.co', role: 'Executive Coaching', status: 'Active', notes: 'Prefers weekly strategic reviews on Tuesday mornings.' },
+                { id: 'c2', name: 'Marcus Chen', email: 'marcus.chen@prepmath.io', role: 'SAT Math Tutoring', status: 'Active', notes: 'Targeting 780+ SAT math score before November test.' },
+                { id: 'c3', name: 'Sarah Jenkins', email: 'sarah@jenkinsstudio.design', role: 'Brand Advisory', status: 'Active', notes: 'Rebranding phase completed. Final delivery scheduled.' },
+                { id: 'c4', name: 'David Vance', email: 'dvance@fintechcapital.com', role: 'Leadership Coaching', status: 'Active', notes: 'Focus on quarterly OKR alignment and executive voice.' },
+                { id: 'c5', name: 'Amara Okafor', email: 'amara@pulsewell.co', role: 'Health & Wellness Coach', status: 'Active', notes: 'Bi-weekly check-ins.' },
+                { id: 'c6', name: 'Julian Thorne', email: 'jthorne@architects.de', role: 'Business Consulting', status: 'Active', notes: 'Retainer client.' },
+                { id: 'c7', name: 'Sophia Martinez', email: 'smartinez@edustudio.org', role: 'Educational Studio', status: 'Active', notes: 'Studio curriculum design.' },
+                { id: 'c8', name: 'Liam O\'Connor', email: 'liam@dublindev.io', role: 'Tech Architecture', status: 'Active', notes: 'Code review and scaling advice.' },
+                { id: 'c9', name: 'Rachel Adams', email: 'radams@contentflow.net', role: 'Editorial Strategy', status: 'Active', notes: 'Monthly magazine planning.' },
+                { id: 'c10', name: 'Tariq Al-Mansoor', email: 'tariq@globalventure.ae', role: 'Investment Advisory', status: 'Active', notes: 'Fundraising pitch coaching.' },
+                { id: 'c11', name: 'Hannah Abbott', email: 'hannah@abbottlaw.co', role: 'Legal Tech Advisory', status: 'Archived', notes: 'Project finished in July.' },
+                { id: 'c12', name: 'Carlos Mendez', email: 'carlos@mendezfitness.com', role: 'Studio Operations', status: 'Archived', notes: 'Paused operations.' }
+            ],
+            sessions: [
+                // Recent & Upcoming dates dynamically structured relative to current time
+                { id: 's1', clientId: 'c1', date: getFormattedDate(0), time: '10:00', price: 250, status: 'Scheduled' },
+                { id: 's2', clientId: 'c2', date: getFormattedDate(1), time: '14:30', price: 120, status: 'Scheduled' },
+                { id: 's3', clientId: 'c3', date: getFormattedDate(2), time: '11:00', price: 300, status: 'Scheduled' },
+                { id: 's4', clientId: 'c4', date: getFormattedDate(3), time: '16:00', price: 400, status: 'Scheduled' },
+                { id: 's5', clientId: 'c5', date: getFormattedDate(5), time: '09:00', price: 150, status: 'Scheduled' },
+                { id: 's6', clientId: 'c1', date: getFormattedDate(-2), time: '10:00', price: 250, status: 'Completed' },
+                { id: 's7', clientId: 'c2', date: getFormattedDate(-4), time: '14:30', price: 120, status: 'Completed' },
+                { id: 's8', clientId: 'c6', date: getFormattedDate(-5), time: '15:00', price: 500, status: 'Completed' },
+                { id: 's9', clientId: 'c7', date: getFormattedDate(-7), time: '13:00', price: 220, status: 'Completed' },
+                { id: 's10', clientId: 'c8', date: getFormattedDate(-9), time: '11:30', price: 350, status: 'Completed' },
+                { id: 's11', clientId: 'c3', date: getFormattedDate(-12), time: '11:00', price: 300, status: 'Completed' },
+                { id: 's12', clientId: 'c4', date: getFormattedDate(-14), time: '16:00', price: 400, status: 'Completed' },
+                { id: 's13', clientId: 'c9', date: getFormattedDate(-15), time: '10:00', price: 200, status: 'Completed' },
+                { id: 's14', clientId: 'c10', date: getFormattedDate(-18), time: '17:00', price: 600, status: 'Completed' },
+                { id: 's15', clientId: 'c2', date: getFormattedDate(-20), time: '14:30', price: 120, status: 'Cancelled' }
+            ],
+            payments: [
+                { id: 'p1', clientId: 'c1', date: getFormattedDate(-2), amount: 250, status: 'Paid' },
+                { id: 'p2', clientId: 'c2', date: getFormattedDate(-4), amount: 120, status: 'Paid' },
+                { id: 'p3', clientId: 'c6', date: getFormattedDate(-5), amount: 500, status: 'Paid' },
+                { id: 'p4', clientId: 'c7', date: getFormattedDate(-7), amount: 220, status: 'Paid' },
+                { id: 'p5', clientId: 'c8', date: getFormattedDate(-9), amount: 350, status: 'Paid' },
+                { id: 'p6', clientId: 'c3', date: getFormattedDate(-12), amount: 300, status: 'Paid' },
+                { id: 'p7', clientId: 'c4', date: getFormattedDate(-14), amount: 400, status: 'Paid' },
+                { id: 'p8', clientId: 'c1', date: getFormattedDate(0), amount: 250, status: 'Pending' },
+                { id: 'p9', clientId: 'c2', date: getFormattedDate(1), amount: 120, status: 'Pending' },
+                { id: 'p10', clientId: 'c3', date: getFormattedDate(2), amount: 300, status: 'Pending' }
+            ]
+        };
+
+        // Helper to get ISO date string offset from today
+        function getFormattedDate(offsetDays) {
+            const d = new Date();
+            d.setDate(d.getDate() + offsetDays);
+            return d.toISOString().split('T')[0];
+        }
+
+        // Global State Engine Object
+        let appState = loadState();
+
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try { return JSON.parse(saved); } catch (e) { console.error('Error loading state', e); }
+            }
+            return JSON.parse(JSON.stringify(INITIAL_DEMO_DATA));
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            renderCurrentView();
+        }
+
+        function confirmResetData() {
+            if (confirm("Reset application data back to default demo state?")) {
+                appState = JSON.parse(JSON.stringify(INITIAL_DEMO_DATA));
+                saveState();
+                showToast("Demo data has been reset.");
+            }
+        }
+
+        /* ==========================================================================
+           ROUTING & VIEW MANAGEMENT
+           ========================================================================== */
+
+        let activeView = 'overview';
+        let activeClientDetailId = null;
+
+        function switchView(viewName) {
+            activeView = viewName;
+            
+            // Highlight nav tabs
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-[#1C1C1C]', 'border-[#2A2A2A]', 'text-[#F2F2F0]');
+                btn.classList.add('border-transparent', 'text-[#A3A3A3]');
+            });
+            const activeBtn = document.getElementById(`nav-${viewName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-[#1C1C1C]', 'border-[#2A2A2A]', 'text-[#F2F2F0]');
+                activeBtn.classList.remove('border-transparent', 'text-[#A3A3A3]');
+            }
+
+            // Hide all view panels
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+            
+            // Show target view panel
+            const targetPanel = document.getElementById(`view-${viewName}`);
+            if (targetPanel) targetPanel.classList.remove('hidden');
+
+            // Titles
+            const titleMap = {
+                overview: { title: 'Overview', sub: 'What is happening in your business' },
+                clients: { title: 'Clients', sub: 'Who do you work with' },
+                sessions: { title: 'Sessions', sub: 'What work do you have scheduled' },
+                payments: { title: 'Payments', sub: 'Financial logs and outstanding balances' }
+            };
+
+            if (titleMap[viewName]) {
+                document.getElementById('page-title').innerText = titleMap[viewName].title;
+                document.getElementById('page-subtitle').innerText = titleMap[viewName].sub;
+            }
+
+            renderCurrentView();
+        }
+
+        function renderCurrentView() {
+            if (activeView === 'overview') renderOverviewView();
+            else if (activeView === 'clients') renderClientsView();
+            else if (activeView === 'sessions') renderSessionsView();
+            else if (activeView === 'payments') renderPaymentsView();
+
+            populateModalDropdowns();
+        }
+
+        /* ==========================================================================
+           STREAMING_CHUNK:Rendering Engine Functions for Individual Views...
+           ========================================================================== */
+
+        // VIEW 1: OVERVIEW RENDERING
+        function renderOverviewView() {
+            // 1. Calculate Monthly Revenue (Completed Sessions)
+            const completedRevenue = appState.sessions
+                .filter(s => s.status === 'Completed')
+                .reduce((sum, s) => sum + (s.price || 0), 0);
+
+            // 2. Count Active Clients
+            const activeClientsCount = appState.clients.filter(c => c.status === 'Active').length;
+
+            // 3. Count Sessions
+            const scheduledCount = appState.sessions.filter(s => s.status === 'Scheduled').length;
+            const completedCount = appState.sessions.filter(s => s.status === 'Completed').length;
+
+            // 4. Calculate Pending Revenue
+            const pendingRevenue = appState.payments
+                .filter(p => p.status === 'Pending')
+                .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+            // Update KPI DOM
+            document.getElementById('kpi-revenue').innerText = `$${completedRevenue.toLocaleString()}`;
+            document.getElementById('kpi-clients').innerText = activeClientsCount;
+            document.getElementById('kpi-sessions').innerText = appState.sessions.length;
+            document.getElementById('kpi-sessions-breakdown').innerText = `${scheduledCount} scheduled / ${completedCount} completed`;
+            document.getElementById('kpi-pending').innerText = `$${pendingRevenue.toLocaleString()}`;
+
+            // Render Next Up (Upcoming Scheduled Sessions)
+            const upcomingList = appState.sessions
+                .filter(s => s.status === 'Scheduled')
+                .sort((a,b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 5);
+
+            const upcomingContainer = document.getElementById('overview-upcoming-list');
+            if (upcomingList.length === 0) {
+                upcomingContainer.innerHTML = `<p class="text-xs text-[#A3A3A3] py-4 text-center">No upcoming sessions scheduled.</p>`;
+            } else {
+                upcomingContainer.innerHTML = upcomingList.map(s => {
+                    const client = appState.clients.find(c => c.id === s.clientId) || { name: 'Unknown Client' };
+                    return `
+                        <div class="py-3 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 rounded-full bg-[#5B4B78]"></div>
+                                <div>
+                                    <div class="text-xs font-semibold text-[#F2F2F0] cursor-pointer hover:underline" onclick="openClientDetails('${client.id}')">${escapeHtml(client.name)}</div>
+                                    <div class="text-[11px] text-[#A3A3A3]">${s.date} &bull; ${s.time}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-xs font-medium text-[#F2F2F0]">$${s.price}</span>
+                                <button onclick="updateSessionStatus('${s.id}', 'Completed')" class="px-2 py-1 bg-[#3E7B5C]/20 hover:bg-[#3E7B5C]/30 text-[#3E7B5C] border border-[#3E7B5C]/40 rounded text-[11px] font-medium transition-colors">
+                                    Mark Complete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Render Recent Payments Log
+            const recentPayments = appState.payments
+                .slice()
+                .sort((a,b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 4);
+
+            const recentPaymentsContainer = document.getElementById('overview-recent-payments');
+            recentPaymentsContainer.innerHTML = recentPayments.map(p => {
+                const client = appState.clients.find(c => c.id === p.clientId) || { name: 'Unknown Client' };
+                const isPaid = p.status === 'Paid';
+                return `
+                    <div class="py-2.5 flex items-center justify-between text-xs">
+                        <div>
+                            <span class="font-medium text-[#F2F2F0]">${escapeHtml(client.name)}</span>
+                            <span class="text-[11px] text-[#A3A3A3] ml-2">${p.date}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-medium text-[#F2F2F0]">$${p.amount}</span>
+                            <span class="px-1.5 py-0.5 text-[10px] rounded ${isPaid ? 'bg-[#3E7B5C]/20 text-[#3E7B5C] border border-[#3E7B5C]/30' : 'bg-[#9E7437]/20 text-[#9E7437] border border-[#9E7437]/30'}">${p.status}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // VIEW 2: CLIENTS RENDERING
+        function renderClientsView() {
+            const searchVal = document.getElementById('client-search').value.toLowerCase();
+            const statusFilter = document.getElementById('client-filter-status').value;
+
+            const filtered = appState.clients.filter(c => {
+                const matchesSearch = c.name.toLowerCase().includes(searchVal) || c.email.toLowerCase().includes(searchVal);
+                const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            });
+
+            const tbody = document.getElementById('clients-table-body');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-[#A3A3A3]">No clients found matching criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(c => {
+                // Calculate client aggregate numbers
+                const clientSessions = appState.sessions.filter(s => s.clientId === c.id);
+                const clientPayments = appState.payments.filter(p => p.clientId === c.id && p.status === 'Paid');
+                const totalPaid = clientPayments.reduce((sum, p) => sum + p.amount, 0);
+
+                const isActive = c.status === 'Active';
+
+                return `
+                    <tr class="hover:bg-[#111111]/40 transition-colors">
+                        <td class="py-3 px-4 font-semibold text-[#F2F2F0] cursor-pointer hover:underline" onclick="openClientDetails('${c.id}')">${escapeHtml(c.name)}</td>
+                        <td class="py-3 px-4 text-[#A3A3A3]">${escapeHtml(c.email)}</td>
+                        <td class="py-3 px-4 text-[#A3A3A3]">${escapeHtml(c.role || 'Service Client')}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 text-[10px] rounded font-medium ${isActive ? 'bg-[#3E7B5C]/20 text-[#3E7B5C] border border-[#3E7B5C]/30' : 'bg-[#2A2A2A] text-[#A3A3A3] border border-[#3A3A3A]'}">${c.status}</span>
+                        </td>
+                        <td class="py-3 px-4 text-[#F2F2F0] font-medium">${clientSessions.length}</td>
+                        <td class="py-3 px-4 text-[#F2F2F0] font-medium">$${totalPaid.toLocaleString()}</td>
+                        <td class="py-3 px-4 text-right space-x-2">
+                            <button onclick="openClientDetails('${c.id}')" class="px-2.5 py-1 bg-[#111111] hover:bg-[#2A2A2A] border border-[#2A2A2A] rounded text-[11px] text-[#F2F2F0] transition-colors">Open</button>
+                            <button onclick="toggleClientStatus('${c.id}')" class="text-[11px] text-[#A3A3A3] hover:text-[#F2F2F0] transition-colors">${isActive ? 'Archive' : 'Activate'}</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // VIEW 3: SESSIONS RENDERING
+        function renderSessionsView() {
+            const searchVal = document.getElementById('session-search').value.toLowerCase();
+            const statusFilter = document.getElementById('session-filter-status').value;
+
+            const filtered = appState.sessions.filter(s => {
+                const client = appState.clients.find(c => c.id === s.clientId);
+                const clientName = client ? client.name.toLowerCase() : '';
+                const matchesSearch = clientName.includes(searchVal);
+                const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            }).sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            const tbody = document.getElementById('sessions-table-body');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-[#A3A3A3]">No sessions found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => {
+                const client = appState.clients.find(c => c.id === s.clientId) || { name: 'Unknown' };
+                let statusBadge = '';
+                if (s.status === 'Completed') statusBadge = '<span class="px-2 py-0.5 text-[10px] bg-[#3E7B5C]/20 text-[#3E7B5C] border border-[#3E7B5C]/30 rounded">Completed</span>';
+                else if (s.status === 'Scheduled') statusBadge = '<span class="px-2 py-0.5 text-[10px] bg-[#5B4B78]/20 text-[#5B4B78] border border-[#5B4B78]/30 rounded">Scheduled</span>';
+                else statusBadge = '<span class="px-2 py-0.5 text-[10px] bg-[#8A3B3B]/20 text-[#8A3B3B] border border-[#8A3B3B]/30 rounded">Cancelled</span>';
+
+                return `
+                    <tr class="hover:bg-[#111111]/40 transition-colors">
+                        <td class="py-3 px-4 font-semibold text-[#F2F2F0] cursor-pointer hover:underline" onclick="openClientDetails('${client.id}')">${escapeHtml(client.name)}</td>
+                        <td class="py-3 px-4 text-[#A3A3A3]">${s.date} &bull; ${s.time}</td>
+                        <td class="py-3 px-4 font-medium text-[#F2F2F0]">$${s.price}</td>
+                        <td class="py-3 px-4">${statusBadge}</td>
+                        <td class="py-3 px-4 text-right space-x-1">
+                            ${s.status === 'Scheduled' ? `
+                                <button onclick="updateSessionStatus('${s.id}', 'Completed')" class="px-2 py-1 bg-[#3E7B5C]/20 text-[#3E7B5C] hover:bg-[#3E7B5C]/30 rounded text-[10px] border border-[#3E7B5C]/30">Complete</button>
+                                <button onclick="updateSessionStatus('${s.id}', 'Cancelled')" class="px-2 py-1 bg-[#111111] text-[#A3A3A3] hover:text-[#F2F2F0] rounded text-[10px] border border-[#2A2A2A]">Cancel</button>
+                            ` : ''}
+                            <button onclick="deleteSession('${s.id}')" class="px-1.5 py-1 text-[#A3A3A3] hover:text-[#8A3B3B] text-[10px]">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // VIEW 4: PAYMENTS RENDERING
+        function renderPaymentsView() {
+            const searchVal = document.getElementById('payment-search').value.toLowerCase();
+            const statusFilter = document.getElementById('payment-filter-status').value;
+
+            // Metrics
+            const totalCollected = appState.payments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + p.amount, 0);
+            const totalPending = appState.payments.filter(p => p.status === 'Pending').reduce((sum, p) => sum + p.amount, 0);
+            
+            document.getElementById('payment-metric-collected').innerText = `$${totalCollected.toLocaleString()}`;
+            document.getElementById('payment-metric-pending').innerText = `$${totalPending.toLocaleString()}`;
+
+            const filtered = appState.payments.filter(p => {
+                const client = appState.clients.find(c => c.id === p.clientId);
+                const clientName = client ? client.name.toLowerCase() : '';
+                const matchesSearch = clientName.includes(searchVal);
+                const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            }).sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            const tbody = document.getElementById('payments-table-body');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-[#A3A3A3]">No payment entries found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => {
+                const client = appState.clients.find(c => c.id === p.clientId) || { name: 'Unknown' };
+                const isPaid = p.status === 'Paid';
+
+                return `
+                    <tr class="hover:bg-[#111111]/40 transition-colors">
+                        <td class="py-3 px-4 font-semibold text-[#F2F2F0] cursor-pointer hover:underline" onclick="openClientDetails('${client.id}')">${escapeHtml(client.name)}</td>
+                        <td class="py-3 px-4 text-[#A3A3A3]">${p.date}</td>
+                        <td class="py-3 px-4 font-semibold text-[#F2F2F0]">$${p.amount}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 text-[10px] rounded font-medium ${isPaid ? 'bg-[#3E7B5C]/20 text-[#3E7B5C] border border-[#3E7B5C]/30' : 'bg-[#9E7437]/20 text-[#9E7437] border border-[#9E7437]/30'}">${p.status}</span>
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            ${!isPaid ? `<button onclick="markPaymentPaid('${p.id}')" class="px-2 py-1 bg-[#3E7B5C]/20 hover:bg-[#3E7B5C]/30 text-[#3E7B5C] border border-[#3E7B5C]/30 rounded text-[10px]">Mark Paid</button>` : `<span class="text-[10px] text-[#A3A3A3]">Logged</span>`}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        /* ==========================================================================
+           STREAMING_CHUNK:Handling Client Details Modal Panel Logic...
+           ========================================================================== */
+
+        function openClientDetails(clientId) {
+            const client = appState.clients.find(c => c.id === clientId);
+            if (!client) return;
+
+            activeClientDetailId = clientId;
+
+            document.getElementById('detail-client-name').innerText = client.name;
+            document.getElementById('detail-client-role-email').innerText = `${client.role || 'Client'} • ${client.email}`;
+            document.getElementById('detail-client-notes').value = client.notes || '';
+
+            const statusEl = document.getElementById('detail-client-status');
+            statusEl.innerText = client.status;
+            if (client.status === 'Active') {
+                statusEl.className = 'px-2 py-0.5 text-[10px] rounded uppercase font-medium bg-[#3E7B5C]/20 text-[#3E7B5C] border border-[#3E7B5C]/30';
+            } else {
+                statusEl.className = 'px-2 py-0.5 text-[10px] rounded uppercase font-medium bg-[#2A2A2A] text-[#A3A3A3] border border-[#3A3A3A]';
+            }
+
+            // Quick trigger buttons inside detail modal
+            document.getElementById('detail-quick-schedule-btn').onclick = () => {
+                closeModal('modal-client-details');
+                openModal('modal-session', clientId);
+            };
+            document.getElementById('detail-quick-payment-btn').onclick = () => {
+                closeModal('modal-client-details');
+                openModal('modal-payment', clientId);
+            };
+
+            // Upcoming Session for this specific client
+            const nextSession = appState.sessions
+                .filter(s => s.clientId === clientId && s.status === 'Scheduled')
+                .sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+
+            const upcomingBox = document.getElementById('detail-upcoming-session-box');
+            if (nextSession) {
+                upcomingBox.innerHTML = `
+                    <div>
+                        <div class="text-xs font-semibold text-[#F2F2F0]">${nextSession.date} at ${nextSession.time}</div>
+                        <div class="text-[11px] text-[#A3A3A3]">$${nextSession.price} scheduled fee</div>
+                    </div>
+                    <button onclick="updateSessionStatus('${nextSession.id}', 'Completed')" class="px-2.5 py-1 bg-[#3E7B5C]/20 hover:bg-[#3E7B5C]/30 text-[#3E7B5C] border border-[#3E7B5C]/30 rounded text-[11px]">Mark Completed</button>
+                `;
+            } else {
+                upcomingBox.innerHTML = `
+                    <span class="text-xs text-[#A3A3A3]">No upcoming session scheduled.</span>
+                    <button onclick="closeModal('modal-client-details'); openModal('modal-session', '${clientId}')" class="text-xs text-[#5B4B78] hover:underline">+ Schedule</button>
+                `;
+            }
+
+            // Client Session History
+            const clientSessions = appState.sessions
+                .filter(s => s.clientId === clientId)
+                .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            const sessionsList = document.getElementById('detail-sessions-list');
+            if (clientSessions.length === 0) {
+                sessionsList.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-[#A3A3A3]">No session records.</td></tr>`;
+            } else {
+                sessionsList.innerHTML = clientSessions.map(s => `
+                    <tr class="text-[11px]">
+                        <td class="p-2.5 text-[#F2F2F0]">${s.date} ${s.time}</td>
+                        <td class="p-2.5 text-[#A3A3A3]">$${s.price}</td>
+                        <td class="p-2.5 text-[#F2F2F0]">${s.status}</td>
+                    </tr>
+                `).join('');
+            }
+
+            // Client Payment History
+            const clientPayments = appState.payments
+                .filter(p => p.clientId === clientId)
+                .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            const paymentsList = document.getElementById('detail-payments-list');
+            if (clientPayments.length === 0) {
+                paymentsList.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-[#A3A3A3]">No payment records.</td></tr>`;
+            } else {
+                paymentsList.innerHTML = clientPayments.map(p => `
+                    <tr class="text-[11px]">
+                        <td class="p-2.5 text-[#F2F2F0]">${p.date}</td>
+                        <td class="p-2.5 text-[#A3A3A3]">$${p.amount}</td>
+                        <td class="p-2.5 font-medium ${p.status === 'Paid' ? 'text-[#3E7B5C]' : 'text-[#9E7437]'}">${p.status}</td>
+                    </tr>
+                `).join('');
+            }
+
+            openModal('modal-client-details');
+        }
+
+        function saveClientNotes() {
+            if (!activeClientDetailId) return;
+            const client = appState.clients.find(c => c.id === activeClientDetailId);
+            if (client) {
+                client.notes = document.getElementById('detail-client-notes').value;
+                saveState();
+                showToast("Client notes updated.");
+            }
+        }
+
+        /* ==========================================================================
+           STREAMING_CHUNK:Action Handlers and State Mutators...
+           ========================================================================== */
+
+        function toggleClientStatus(clientId) {
+            const client = appState.clients.find(c => c.id === clientId);
+            if (client) {
+                client.status = client.status === 'Active' ? 'Archived' : 'Active';
+                saveState();
+                showToast(`Client ${client.name} set to ${client.status}.`);
+            }
+        }
+
+        function updateSessionStatus(sessionId, newStatus) {
+            const session = appState.sessions.find(s => s.id === sessionId);
+            if (session) {
+                session.status = newStatus;
+
+                // Auto-generate or adjust payment entry if session is completed
+                if (newStatus === 'Completed') {
+                    const existingPay = appState.payments.find(p => p.clientId === session.clientId && p.date === session.date && p.amount === session.price);
+                    if (!existingPay) {
+                        appState.payments.push({
+                            id: 'p_' + Date.now(),
+                            clientId: session.clientId,
+                            date: session.date,
+                            amount: session.price,
+                            status: 'Paid'
+                        });
+                    }
+                }
+
+                saveState();
+                showToast(`Session status updated to ${newStatus}.`);
+            }
+        }
+
+        function deleteSession(sessionId) {
+            if (confirm("Delete this session record?")) {
+                appState.sessions = appState.sessions.filter(s => s.id !== sessionId);
+                saveState();
+                showToast("Session deleted.");
+            }
+        }
+
+        function markPaymentPaid(paymentId) {
+            const payment = appState.payments.find(p => p.id === paymentId);
+            if (payment) {
+                payment.status = 'Paid';
+                saveState();
+                showToast("Payment marked as Paid.");
+            }
+        }
+
+        /* Form Submissions */
+        function handleCreateClient(e) {
+            e.preventDefault();
+            const name = document.getElementById('form-client-name').value.trim();
+            const email = document.getElementById('form-client-email').value.trim();
+            const role = document.getElementById('form-client-role').value.trim();
+
+            if (!name || !email) return;
+
+            const newClient = {
+                id: 'c_' + Date.now(),
+                name,
+                email,
+                role: role || 'Client',
+                status: 'Active',
+                notes: ''
+            };
+
+            appState.clients.push(newClient);
+            saveState();
+            closeModal('modal-client');
+            e.target.reset();
+            showToast(`Client ${name} created.`);
+        }
+
+        function handleCreateSession(e) {
+            e.preventDefault();
+            const clientId = document.getElementById('form-session-client').value;
+            const date = document.getElementById('form-session-date').value;
+            const time = document.getElementById('form-session-time').value;
+            const price = parseFloat(document.getElementById('form-session-price').value) || 0;
+
+            if (!clientId || !date) return;
+
+            const newSession = {
+                id: 's_' + Date.now(),
+                clientId,
+                date,
+                time: time || '10:00',
+                price,
+                status: 'Scheduled'
+            };
+
+            appState.sessions.push(newSession);
+
+            // Also create pending payment entry
+            appState.payments.push({
+                id: 'p_' + Date.now(),
+                clientId,
+                date,
+                amount: price,
+                status: 'Pending'
+            });
+
+            saveState();
+            closeModal('modal-session');
+            showToast("Session scheduled.");
+        }
+
+        function handleCreatePayment(e) {
+            e.preventDefault();
+            const clientId = document.getElementById('form-payment-client').value;
+            const amount = parseFloat(document.getElementById('form-payment-amount').value) || 0;
+            const date = document.getElementById('form-payment-date').value;
+            const status = document.getElementById('form-payment-status').value;
+
+            if (!clientId || !date || !amount) return;
+
+            appState.payments.push({
+                id: 'p_' + Date.now(),
+                clientId,
+                date,
+                amount,
+                status
+            });
+
+            saveState();
+            closeModal('modal-payment');
+            showToast("Payment entry recorded.");
+        }
+
+        /* ==========================================================================
+           STREAMING_CHUNK:UI Helper Functions, Modals, and Toasts...
+           ========================================================================== */
+
+        function openModal(modalId, preselectClientId = null) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+                
+                // Preselect Client dropdown if applicable
+                if (preselectClientId) {
+                    if (modalId === 'modal-session') {
+                        document.getElementById('form-session-client').value = preselectClientId;
+                    } else if (modalId === 'modal-payment') {
+                        document.getElementById('form-payment-client').value = preselectClientId;
+                    }
+                }
+
+                // Set default dates to today in inputs
+                const today = getFormattedDate(0);
+                const sessionDateInput = document.getElementById('form-session-date');
+                if (sessionDateInput && !sessionDateInput.value) sessionDateInput.value = today;
+
+                const paymentDateInput = document.getElementById('form-payment-date');
+                if (paymentDateInput && !paymentDateInput.value) paymentDateInput.value = today;
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function populateModalDropdowns() {
+            const activeClients = appState.clients.filter(c => c.status === 'Active');
+            const optionsHtml = activeClients.map(c => `<option value="${c.id}">${escapeHtml(c.name)} (${escapeHtml(c.role || 'Client')})</option>`).join('');
+
+            const sessionSelect = document.getElementById('form-session-client');
+            if (sessionSelect) sessionSelect.innerHTML = optionsHtml;
+
+            const paymentSelect = document.getElementById('form-payment-client');
+            if (paymentSelect) paymentSelect.innerHTML = optionsHtml;
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'px-4 py-2.5 bg-[#1C1C1C] border border-[#2A2A2A] text-[#F2F2F0] text-xs rounded-md shadow-lg transform transition-all duration-300 opacity-0 translate-y-2 flex items-center space-x-2';
+            toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-[#5B4B78]"></span><span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            }, 10);
+
+            // Remove after delay
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        // Global Event Listeners (Keyboard ESC key close modal)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal('modal-client-details');
+                closeModal('modal-client');
+                closeModal('modal-session');
+                closeModal('modal-payment');
+            }
+        });
+
+        // Application OnLoad Initialization
+        window.onload = function() {
+            switchView('overview');
+        };
+    </script>
+</body>
+</html>

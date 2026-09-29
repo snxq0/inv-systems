@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JACK ALEXANDER VALDEN — Official Personal Archive & Works</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Inter:wght@200;300;400;500;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        graphite: {
+                            950: '#0a0b0d',
+                            900: '#111215',
+                            800: '#181a1f',
+                            700: '#262930',
+                            600: '#3a3e47'
+                        },
+                        dirty: {
+                            white: '#e3e1dc',
+                            muted: '#9c9a94',
+                            dim: '#5e5d59'
+                        },
+                        burgundy: {
+                            DEFAULT: '#6b1827',
+                            hover: '#8c2033',
+                            glow: 'rgba(107, 24, 39, 0.25)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Styles & Grain Shader Emulation -->
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0b0d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262930;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b1827;
+        }
+
+        /* Subtle Noise Overlay */
+        #grain-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.035;
+        }
+
+        /* Selection styling */
+        ::selection {
+            background: #6b1827;
+            color: #f0eee9;
+        }
+
+        /* Reading Modal Styles */
+        .reader-content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.85;
+            text-align: justify;
+        }
+        .reader-content p::first-letter {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #e3e1dc;
+        }
+
+        /* Cold Blur Effects */
+        .backdrop-cold {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Subtle underline animation */
+        .link-underline {
+            position: relative;
+        }
+        .link-underline::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #6b1827;
+            transition: width 0.3s ease-in-out;
+        }
+        .link-underline:hover::after {
+            width: 100%;
+        }
+
+        /* Editorial Border utilities */
+        .border-fine {
+            border-color: rgba(227, 225, 220, 0.08);
+        }
+
+        /* Section Reveal Effect */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-graphite-950 text-dirty-white font-sans antialiased overflow-x-hidden selection:bg-burgundy selection:text-dirty-white min-h-screen flex flex-col justify-between">
+
+    <!-- Film Grain Canvas Overlay -->
+    <canvas id="grain-canvas"></canvas>
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-graphite-950/80 backdrop-cold border-b border-fine transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
+            
+            <!-- Logo / Author Identity -->
+            <a href="#hero" class="group flex flex-col tracking-widest text-xs md:text-sm font-display font-semibold hover:opacity-80 transition-opacity">
+                <span class="text-dirty-white group-hover:text-burgundy transition-colors uppercase">Jack Alexander Valden</span>
+                <span class="text-[10px] text-dirty-dim font-sans font-light tracking-normal" id="header-sub">ARCHIVE // 2026</span>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center space-x-10 text-xs tracking-wider uppercase font-medium text-dirty-muted">
+                <a href="#books" class="hover:text-dirty-white link-underline transition-colors nav-link" data-ru="КНИГИ" data-en="BOOKS">КНИГИ</a>
+                <a href="#archive" class="hover:text-dirty-white link-underline transition-colors nav-link" data-ru="АРХИВ" data-en="ARCHIVE">АРХИВ</a>
+                <a href="#philosophy" class="hover:text-dirty-white link-underline transition-colors nav-link" data-ru="О ЗАЧЕМ" data-en="WHY I WRITE">О ЗАЧЕМ</a>
+                <a href="#about" class="hover:text-dirty-white link-underline transition-colors nav-link" data-ru="ОБ АВТОРЕ" data-en="ABOUT">ОБ АВТОРЕ</a>
+            </nav>
+
+            <!-- Toggles & Controls -->
+            <div class="flex items-center space-x-6 text-xs">
+                
+                <!-- Audio Ambient Generator Toggle -->
+                <button id="audio-toggle" title="Toggle Vinyl/Tape Grain Atmosphere" class="flex items-center space-x-2 text-dirty-dim hover:text-dirty-white transition-colors border border-fine px-2.5 py-1 rounded-sm bg-graphite-900/50">
+                    <span class="inline-block w-2 h-2 rounded-full bg-dirty-dim" id="audio-indicator"></span>
+                    <span class="font-mono text-[10px] tracking-tight uppercase" id="audio-label">ATMOSPHERE: OFF</span>
+                </button>
+
+                <!-- Language Selector -->
+                <div class="flex items-center space-x-2 font-mono text-[11px] border border-fine px-2 py-0.5 rounded-sm bg-graphite-900/30">
+                    <button id="lang-ru" class="text-dirty-white font-bold transition-colors hover:text-dirty-white">RU</button>
+                    <span class="text-dirty-dim">/</span>
+                    <button id="lang-en" class="text-dirty-dim transition-colors hover:text-dirty-white">EN</button>
+                </div>
+
+                <!-- Mobile Hamburger Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-dirty-white focus:outline-none p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="hamburger-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-graphite-950 border-b border-fine px-6 py-8 flex flex-col space-y-6 text-sm tracking-wider uppercase font-medium text-dirty-muted">
+            <a href="#books" class="hover:text-dirty-white transition-colors mobile-nav-link" data-ru="КНИГИ" data-en="BOOKS">КНИГИ</a>
+            <a href="#archive" class="hover:text-dirty-white transition-colors mobile-nav-link" data-ru="АРХИВ" data-en="ARCHIVE">АРХИВ</a>
+            <a href="#philosophy" class="hover:text-dirty-white transition-colors mobile-nav-link" data-ru="О ЗАЧЕМ" data-en="WHY I WRITE">О ЗАЧЕМ</a>
+            <a href="#about" class="hover:text-dirty-white transition-colors mobile-nav-link" data-ru="ОБ АВТОРЕ" data-en="ABOUT">ОБ АВТОРЕ</a>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="min-h-screen flex flex-col justify-center items-center relative pt-24 pb-12 px-6 max-w-7xl mx-auto w-full border-b border-fine">
+        
+        <!-- Subtle Top Metadata -->
+        <div class="reveal active text-center mb-8">
+            <span class="text-[11px] font-mono tracking-[0.3em] uppercase text-dirty-dim block mb-2" data-ru="АВТОРСКИЙ ЛИТЕРАТУРНЫЙ АРХИВ" data-en="AUTHOR'S LITERARY ARCHIVE">АВТОРСКИЙ ЛИТЕРАТУРНЫЙ АРХИВ</span>
+            <div class="w-12 h-[1px] bg-burgundy/60 mx-auto"></div>
+        </div>
+
+        <!-- Main Title Typography -->
+        <h1 class="reveal active text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-extrabold tracking-tight text-center text-dirty-white uppercase select-none leading-none mb-6">
+            JACK ALEXANDER<br><span class="text-dirty-white/90 font-serif italic font-normal hover:text-burgundy transition-colors duration-500">VALDEN</span>
+        </h1>
+
+        <!-- Subtitle Statement -->
+        <p class="reveal active text-sm sm:text-base md:text-lg font-serif italic text-dirty-muted text-center max-w-2xl mb-12 font-light leading-relaxed px-4" data-ru="Писатель. Наблюдатель. Человек, который слишком много думает." data-en="I write about what people usually leave unsaid.">
+            Писатель. Наблюдатель. Человек, который слишком много думает.
+        </p>
+
+        <!-- Unsettling Teaser Text Box -->
+        <div class="reveal active max-w-xl text-center border-l border-burgundy/40 pl-6 my-8 py-2 text-left sm:text-center sm:border-l-0 sm:pl-0">
+            <p class="text-xs sm:text-sm font-mono tracking-wide text-dirty-muted uppercase mb-1" data-ru="ФРАГМЕНТ МЫСЛИ" data-en="FRAGMENT OF THOUGHT">ФРАГМЕНТ МЫСЛИ</p>
+            <p class="text-sm sm:text-base font-serif italic text-dirty-white/90" data-ru="«Некоторые истории заканчиваются на последней странице. Некоторые — только начинаются.»" data-en="“Some stories end on the last page. Some only just begin.”">
+                «Некоторые истории заканчиваются на последней странице. Некоторые — только начинаются.»
+            </p>
+        </div>
+
+        <!-- Call to Action Buttons -->
+        <div class="reveal active flex flex-wrap justify-center gap-4 mt-8 text-xs font-mono tracking-widest uppercase">
+            <a href="#books" class="px-8 py-3.5 border border-dirty-white/20 hover:border-burgundy hover:bg-burgundy/10 text-dirty-white transition-all duration-300 rounded-sm" data-ru="КНИГИ" data-en="BOOKS">
+                КНИГИ
+            </a>
+            <a href="#archive" class="px-8 py-3.5 border border-fine hover:border-dirty-white/40 text-dirty-muted hover:text-dirty-white transition-all duration-300 rounded-sm" data-ru="ТЕКСТЫ" data-en="TEXTS">
+                ТЕКСТЫ
+            </a>
+            <a href="#about" class="px-8 py-3.5 border border-fine hover:border-dirty-white/40 text-dirty-muted hover:text-dirty-white transition-all duration-300 rounded-sm" data-ru="ОБ АВТОРЕ" data-en="ABOUT AUTHOR">
+                ОБ АВТОРЕ
+            </a>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center opacity-40 hover:opacity-100 transition-opacity">
+            <span class="text-[10px] font-mono tracking-widest text-dirty-dim uppercase block mb-2" data-ru="ПРОКРУТКА" data-en="SCROLL DOWN">ПРОКРУТКА</span>
+            <div class="w-[1px] h-8 bg-dirty-dim mx-auto animate-pulse"></div>
+        </div>
+    </section>
+
+    <!-- CORE MANTRA BANNER -->
+    <section class="py-24 border-b border-fine bg-graphite-900/30">
+        <div class="max-w-5xl mx-auto px-6 text-center reveal">
+            <span class="text-xs font-mono tracking-[0.4em] uppercase text-burgundy block mb-6" data-ru="ГЛАВНЫЙ ПРИНЦИП" data-en="CORE MANIFESTO">ГЛАВНЫЙ ПРИНЦИП</span>
+            <blockquote class="text-2xl sm:text-3xl md:text-4xl font-serif italic text-dirty-white leading-snug font-normal" data-ru="«Я не пытаюсь объяснить человека. Я пытаюсь показать, что от него остаётся, когда объяснения заканчиваются.»" data-en="“I am not trying to explain a human being. I am trying to show what remains of them when explanations run out.”">
+                «Я не пытаюсь объяснить человека. Я пытаюсь показать, что от него остаётся, когда объяснения заканчиваются.»
+            </blockquote>
+        </div>
+    </section>
+
+    <!-- SECTION: BOOKS / OBJECTS -->
+    <section id="books" class="py-32 px-6 max-w-7xl mx-auto w-full border-b border-fine">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 reveal">
+            <div>
+                <span class="text-xs font-mono tracking-[0.3em] uppercase text-burgundy block mb-2" data-ru="01 // ПРОИЗВЕДЕНИЯ" data-en="01 // WORKS">01 // ПРОИЗВЕДЕНИЯ</span>
+                <h2 class="text-3xl md:text-5xl font-display font-bold uppercase text-dirty-white" data-ru="ЛИ ТЕ РА ТУ Р Н Ы Е  ОБ Ъ ЕК ТЫ" data-en="LITERARY OBJECTS">ЛИ ТЕ РА ТУ Р Н Ы Е  ОБ Ъ ЕК ТЫ</h2>
+            </div>
+            <p class="text-xs font-mono text-dirty-dim uppercase mt-4 md:mt-0" data-ru="КНИГИ КАК МАТЕРИАЛИЗАЦИЯ ВНУТРЕННЕЙ ПУСТОТЫ" data-en="BOOKS AS MATERIALIZATION OF INTERNAL EMPTINESS">
+                КНИГИ КАК МАТЕРИАЛИЗАЦИЯ ВНУТРЕННЕЙ ПУСТОТЫ
+            </p>
+        </div>
+
+        <!-- MAIN WORK: STERZHEN -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-24 reveal">
+            
+            <!-- Custom Styled Book Mockup Canvas Card -->
+            <div class="lg:col-span-5 flex justify-center">
+                <div class="relative w-full max-w-sm aspect-[2/3] bg-graphite-900 border border-dirty-white/10 rounded-sm p-8 flex flex-col justify-between shadow-2xl group hover:border-burgundy/50 transition-all duration-500 overflow-hidden">
+                    
+                    <!-- Spine shadow emulation -->
+                    <div class="absolute top-0 left-0 bottom-0 w-4 bg-gradient-to-r from-black/60 to-transparent"></div>
+                    
+                    <div class="z-10">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-burgundy block mb-1">NOVEL / РОМАН</span>
+                        <p class="text-xs font-mono text-dirty-dim">ISBN 978-5-00-2026-VAL</p>
+                    </div>
+
+                    <div class="z-10 my-auto py-8">
+                        <h3 class="text-4xl font-serif font-bold text-dirty-white group-hover:text-dirty-white transition-colors tracking-tight mb-2">
+                            Стержень.
+                        </h3>
+                        <p class="text-xs font-mono text-dirty-muted tracking-wider uppercase">Jack Alexander Valden</p>
+                    </div>
+
+                    <div class="z-10 border-t border-fine pt-4 flex justify-between items-end">
+                        <div>
+                            <p class="text-[10px] font-mono text-dirty-dim uppercase" data-ru="СТАТУС" data-en="STATUS">СТАТУС</p>
+                            <p class="text-xs font-mono text-dirty-white" data-ru="Издано / 2026" data-en="Published / 2026">Издано / 2026</p>
+                        </div>
+                        <span class="text-[10px] font-mono text-dirty-dim">384 PAGES</span>
+                    </div>
+
+                    <!-- Subtle Monolithic Background Artwork Element -->
+                    <div class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full border border-burgundy/20 pointer-events-none group-hover:scale-125 transition-transform duration-700"></div>
+                </div>
+            </div>
+
+            <!-- Main Work Details & Description -->
+            <div class="lg:col-span-7 flex flex-col justify-center space-y-6">
+                
+                <div class="flex items-center space-x-3 text-xs font-mono text-burgundy">
+                    <span class="w-2 h-2 rounded-full bg-burgundy"></span>
+                    <span data-ru="ГЛАВНЫЙ ПРОЕКТ" data-en="FLAGSHIP WORK">ГЛАВНЫЙ ПРОЕКТ</span>
+                </div>
+
+                <h3 class="text-3xl md:text-4xl font-serif italic text-dirty-white" data-ru="«Стержень.»" data-en="“The Core.”">
+                    «Стержень.»
+                </h3>
+
+                <p class="text-dirty-muted text-sm md:text-base leading-relaxed font-light" data-ru="История о человеке, который пытается понять, где заканчивается его собственная личность и начинается всё то, что в него вложили другие. Текст исследовательской жестокости о семье, отчуждении и попытке собрать из обломков нечто прочное." data-en="A story about a person trying to understand where their own personality ends and where everything poured into them by others begins. A text of investigative severity on family, alienation, and the attempt to build something solid out of debris.">
+                    История о человеке, который пытается понять, где заканчивается его собственная личность и начинается всё то, что в него вложили другие. Текст исследовательской жестокости о семье, отчуждении и попытке собрать из обломков нечто прочное.
+                </p>
+
+                <!-- Book Metadata List -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 py-6 border-y border-fine font-mono text-xs">
+                    <div>
+                        <span class="text-dirty-dim block mb-1" data-ru="ЖАНР" data-en="GENRE">ЖАНР</span>
+                        <span class="text-dirty-white" data-ru="Экзистенциальный роман" data-en="Existential Fiction">Экзистенциальный роман</span>
+                    </div>
+                    <div>
+                        <span class="text-dirty-dim block mb-1" data-ru="ОБЪЁМ" data-en="PAGES">ОБЪЁМ</span>
+                        <span class="text-dirty-white" data-ru="384 стр." data-en="384 pages">384 стр.</span>
+                    </div>
+                    <div>
+                        <span class="text-dirty-dim block mb-1" data-ru="ТЕМА" data-en="THEMES">ТЕМА</span>
+                        <span class="text-dirty-white" data-ru="Идентичность / Травма" data-en="Identity / Trauma">Идентичность / Травма</span>
+                    </div>
+                </div>
+
+                <!-- Selected Quotes From Book -->
+                <div class="space-y-3 pt-2">
+                    <p class="text-xs font-mono text-dirty-dim uppercase" data-ru="ЦИТАТА ИЗ КНИГИ:" data-en="EXCERPT QUOTE:">ЦИТАТА ИЗ КНИГИ:</p>
+                    <p class="text-sm font-serif italic text-dirty-white/90 border-l-2 border-burgundy pl-4 py-1" data-ru="«Самое страшное не в том, что тебя ломают. Самое страшное — заметить, что тебе начинает нравиться форма получившихся осколков.»" data-en="“The terrifying part isn’t being broken. It’s noticing that you’re beginning to like the shape of the resulting shards.”">
+                        «Самое страшное не в том, что тебя ломают. Самое страшное — заметить, что тебе начинает нравиться форма получившихся осколков.»
+                    </p>
+                </div>
+
+                <!-- Read Excerpt Interactive Button -->
+                <div class="pt-4 flex flex-wrap gap-4">
+                    <button onclick="openReader('sterzhen')" class="px-6 py-3 bg-dirty-white text-graphite-950 font-mono text-xs font-semibold tracking-wider uppercase hover:bg-burgundy hover:text-dirty-white transition-all duration-300 rounded-sm" data-ru="ЧИТАТЬ ОТРЫВОК" data-en="READ EXCERPT">
+                        ЧИТАТЬ ОТРЫВОК
+                    </button>
+                    <button onclick="openPreorderModal()" class="px-6 py-3 border border-fine text-dirty-muted font-mono text-xs font-semibold tracking-wider uppercase hover:border-dirty-white hover:text-dirty-white transition-all duration-300 rounded-sm" data-ru="ГДЕ НАЙТИ КНИГУ" data-en="WHERE TO FIND">
+                        ГДЕ НАЙТИ КНИГУ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECONDARY WORK: CHUZHAK -->
+        <div class="mt-24 pt-16 border-t border-fine grid grid-cols-1 md:grid-cols-12 gap-8 items-center reveal">
+            <div class="md:col-span-8">
+                <div class="flex items-center space-x-3 text-xs font-mono text-dirty-dim mb-3">
+                    <span class="w-2 h-2 rounded-full bg-dirty-dim"></span>
+                    <span data-ru="В РАЗРАБОТКЕ / NOVELLA" data-en="IN PROGRESS / NOVELLA">В РАЗРАБОТКЕ / NOVELLA</span>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-serif font-bold text-dirty-white mb-3" data-ru="«Чужак»" data-en="“The Stranger”">«Чужак»</h3>
+                <p class="text-sm text-dirty-muted font-light max-w-2xl leading-relaxed" data-ru="Повесть о молчаливом отчуждении внутри большого города. Человек возвращается в квартиру своего детства, чтобы обнаружить: место осталось прежним, но пространства для него там больше нет." data-en="A novella about silent alienation inside a metropolis. A person returns to their childhood apartment only to discover: the place remained identical, but there is no longer any space left for them inside it.">
+                    Повесть о молчаливом отчуждении внутри большого города. Человек возвращается в квартиру своего детства, чтобы обнаружить: место осталось прежним, но пространства для него там больше нет.
+                </p>
+            </div>
+            <div class="md:col-span-4 flex flex-col md:items-end justify-center">
+                <span class="text-xs font-mono text-dirty-dim uppercase mb-2" data-ru="ГОТОВНОСТЬ: 75%" data-en="STATUS: 75% WRITTEN">ГОТОВНОСТЬ: 75%</span>
+                <div class="w-full md:w-48 h-1 bg-graphite-800 rounded-full overflow-hidden">
+                    <div class="w-3/4 h-full bg-burgundy"></div>
+                </div>
+                <button onclick="openReader('chuzhak')" class="mt-4 text-xs font-mono text-dirty-white underline hover:text-burgundy transition-colors" data-ru="Прочесть фрагмент черновика →" data-en="Read draft fragment →">
+                    Прочесть фрагмент черновика →
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: ARCHIVE / TEXTS -->
+    <section id="archive" class="py-32 px-6 max-w-7xl mx-auto w-full border-b border-fine">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 reveal">
+            <div>
+                <span class="text-xs font-mono tracking-[0.3em] uppercase text-burgundy block mb-2" data-ru="02 // ЛИЧНЫЙ АРХИВ" data-en="02 // PERSONAL ARCHIVE">02 // ЛИЧНЫЙ АРХИВ</span>
+                <h2 class="text-3xl md:text-5xl font-display font-bold uppercase text-dirty-white" data-ru="Т Е К С Т Ы  И  О С К О Л К И" data-en="TEXTS & FRAGMENTS">Т Е К С Т Ы  И  О С К О Л К И</h2>
+            </div>
+            <p class="text-xs font-mono text-dirty-dim uppercase mt-4 md:mt-0" data-ru="НЕ БЛОГ. ЗАМЕТКИ, ЭССЕ И НАБЛЮДЕНИЯ." data-en="NOT A BLOG. NOTES, ESSAYS AND OBSERVATIONS.">
+                НЕ БЛОГ. ЗАМЕТКИ, ЭССЕ И НАБЛЮДЕНИЯ.
+            </p>
+        </div>
+
+        <!-- Archive List Table / Cards -->
+        <div class="space-y-4 reveal">
+            
+            <!-- Fragment Item 1 -->
+            <div onclick="openArchiveText(1)" class="group border border-fine hover:border-burgundy/60 bg-graphite-900/20 hover:bg-graphite-900/60 p-6 sm:p-8 rounded-sm transition-all duration-300 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-start space-x-6">
+                    <span class="font-mono text-xs text-burgundy font-bold pt-1">01</span>
+                    <div>
+                        <h3 class="text-xl font-serif font-semibold text-dirty-white group-hover:text-dirty-white transition-colors flex items-center gap-3" data-ru="Муть" data-en="Dregs / Turbidity">
+                            Муть
+                            <span class="text-[10px] font-mono px-2 py-0.5 border border-fine text-dirty-dim font-normal rounded-sm uppercase" data-ru="короткий фрагмент" data-en="short fragment">короткий фрагмент</span>
+                        </h3>
+                        <p class="text-xs font-sans text-dirty-muted mt-2 font-light line-clamp-1" data-ru="Бывают дни, когда мысли не приобретают форму слова. Они остаются липким осадком на дне сознания..." data-en="There are days when thoughts fail to take the shape of words. They remain sticky sediment at the bottom...">
+                            Бывают дни, когда мысли не приобретают форму слова. Они остаются липким осадком на дне сознания...
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between md:justify-end space-x-6 text-xs font-mono text-dirty-dim border-t md:border-t-0 border-fine pt-3 md:pt-0">
+                    <span>2026.02.14</span>
+                    <span class="group-hover:translate-x-2 transition-transform duration-300 text-dirty-white">→</span>
+                </div>
+            </div>
+
+            <!-- Fragment Item 2 -->
+            <div onclick="openArchiveText(2)" class="group border border-fine hover:border-burgundy/60 bg-graphite-900/20 hover:bg-graphite-900/60 p-6 sm:p-8 rounded-sm transition-all duration-300 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-start space-x-6">
+                    <span class="font-mono text-xs text-burgundy font-bold pt-1">02</span>
+                    <div>
+                        <h3 class="text-xl font-serif font-semibold text-dirty-white group-hover:text-dirty-white transition-colors flex items-center gap-3" data-ru="О человеке, который слишком долго молчал" data-en="On the man who was silent for too long">
+                            О человеке, который слишком долго молчал
+                            <span class="text-[10px] font-mono px-2 py-0.5 border border-fine text-dirty-dim font-normal rounded-sm uppercase" data-ru="эссе / заметка" data-en="essay / note">эссе / заметка</span>
+                        </h3>
+                        <p class="text-xs font-sans text-dirty-muted mt-2 font-light line-clamp-1" data-ru="Молчание — это не отсутствие звука. Это присутствие накопившейся тяжести, которую некому передать..." data-en="Silence is not the absence of sound. It is the presence of accumulated weight with no recipient...">
+                            Молчание — это не отсутствие звука. Это присутствие накопившейся тяжести, которую некому передать...
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between md:justify-end space-x-6 text-xs font-mono text-dirty-dim border-t md:border-t-0 border-fine pt-3 md:pt-0">
+                    <span>2026.01.29</span>
+                    <span class="group-hover:translate-x-2 transition-transform duration-300 text-dirty-white">→</span>
+                </div>
+            </div>
+
+            <!-- Fragment Item 3 -->
+            <div onclick="openArchiveText(3)" class="group border border-fine hover:border-burgundy/60 bg-graphite-900/20 hover:bg-graphite-900/60 p-6 sm:p-8 rounded-sm transition-all duration-300 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-start space-x-6">
+                    <span class="font-mono text-xs text-burgundy font-bold pt-1">03</span>
+                    <div>
+                        <h3 class="text-xl font-serif font-semibold text-dirty-white group-hover:text-dirty-white transition-colors flex items-center gap-3" data-ru="Без названия" data-en="Untitled">
+                            Без названия
+                            <span class="text-[10px] font-mono px-2 py-0.5 border border-fine text-dirty-dim font-normal rounded-sm uppercase" data-ru="фрагмент" data-en="fragment">фрагмент</span>
+                        </h3>
+                        <p class="text-xs font-sans text-dirty-muted mt-2 font-light line-clamp-1" data-ru="Мы учимся скрывать свои шрамы не потому, что стыдимся их, а потому что устали отвечать на глупые вопросы..." data-en="We learn to hide our scars not out of shame, but because we are tired of answering foolish questions...">
+                            Мы учимся скрывать свои шрамы не потому, что стыдимся их, а потому что устали отвечать на глупые вопросы...
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between md:justify-end space-x-6 text-xs font-mono text-dirty-dim border-t md:border-t-0 border-fine pt-3 md:pt-0">
+                    <span>2025.11.18</span>
+                    <span class="group-hover:translate-x-2 transition-transform duration-300 text-dirty-white">→</span>
+                </div>
+            </div>
+
+            <!-- Fragment Item 4 -->
+            <div onclick="openArchiveText(4)" class="group border border-fine hover:border-burgundy/60 bg-graphite-900/20 hover:bg-graphite-900/60 p-6 sm:p-8 rounded-sm transition-all duration-300 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-start space-x-6">
+                    <span class="font-mono text-xs text-burgundy font-bold pt-1">04</span>
+                    <div>
+                        <h3 class="text-xl font-serif font-semibold text-dirty-white group-hover:text-dirty-white transition-colors flex items-center gap-3" data-ru="Осколки родства" data-en="Shards of Kinship">
+                            Осколки родства
+                            <span class="text-[10px] font-mono px-2 py-0.5 border border-fine text-dirty-dim font-normal rounded-sm uppercase" data-ru="заметка о семье" data-en="note on family">заметка о семье</span>
+                        </h3>
+                        <p class="text-xs font-sans text-dirty-muted mt-2 font-light line-clamp-1" data-ru="Семья — это единственное место на земле, где тебе могут одновременно дать укрытие и выбить землю из-под ног..." data-en="Family is the only place on earth where you can simultaneously be given shelter and swept off your feet...">
+                            Семья — это единственное место на земле, где тебе могут одновременно дать укрытие и выбить землю из-под ног...
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between md:justify-end space-x-6 text-xs font-mono text-dirty-dim border-t md:border-t-0 border-fine pt-3 md:pt-0">
+                    <span>2025.09.04</span>
+                    <span class="group-hover:translate-x-2 transition-transform duration-300 text-dirty-white">→</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECTION: PHILOSOPHY ("WHY I WRITE / О ЗАЧЕМ") -->
+    <section id="philosophy" class="py-32 px-6 max-w-7xl mx-auto w-full border-b border-fine bg-graphite-900/10">
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-16 reveal">
+                <span class="text-xs font-mono tracking-[0.3em] uppercase text-burgundy block mb-2" data-ru="03 // МАНФЕСТ ПИСАТЕЛЯ" data-en="03 // WRITER'S MANIFESTO">03 // МАНФЕСТ ПИСАТЕЛЯ</span>
+                <h2 class="text-3xl md:text-5xl font-display font-bold uppercase text-dirty-white" data-ru="О  З А Ч Е М" data-en="WHY I WRITE">О  З А Ч Е М</h2>
+            </div>
+
+            <!-- Uncompromising Principles List -->
+            <div class="space-y-12 reveal">
+                
+                <div class="border-l-2 border-burgundy pl-6 md:pl-8 py-2 space-y-2">
+                    <span class="font-mono text-xs text-dirty-dim uppercase">PRINCIPLE 01</span>
+                    <p class="text-xl md:text-2xl font-serif text-dirty-white leading-relaxed" data-ru="«Я не пишу хороших людей. Я пишу людей.»" data-en="“I do not write good people. I write people.”">
+                        «Я не пишу хороших людей. Я пишу людей.»
+                    </p>
+                </div>
+
+                <div class="border-l-2 border-fine hover:border-burgundy pl-6 md:pl-8 py-2 space-y-2 transition-colors duration-300">
+                    <span class="font-mono text-xs text-dirty-dim uppercase">PRINCIPLE 02</span>
+                    <p class="text-xl md:text-2xl font-serif text-dirty-white leading-relaxed" data-ru="«Мне интереснее человек, который не знает, чего хочет, чем человек, который уже нашёл ответ.»" data-en="“I am far more interested in a person who doesn't know what they want than in someone who has already found the answer.”">
+                        «Мне интереснее человек, который не знает, чего хочет, чем человек, который уже нашёл ответ.»
+                    </p>
+                </div>
+
+                <div class="border-l-2 border-fine hover:border-burgundy pl-6 md:pl-8 py-2 space-y-2 transition-colors duration-300">
+                    <span class="font-mono text-xs text-dirty-dim uppercase">PRINCIPLE 03</span>
+                    <p class="text-xl md:text-2xl font-serif text-dirty-white leading-relaxed" data-ru="«Взросление — не превращение в лучшую версию себя, а сборка личности из того, что уцелело после столкновения с реальностью.»" data-en="“Growing up is not turning into a better version of yourself, but assembling a persona out of whatever survived collision with reality.”">
+                        «Взросление — не превращение в лучшую версию себя, а сборка личности из того, что уцелело после столкновения с реальностью.»
+                    </p>
+                </div>
+
+                <div class="border-l-2 border-fine hover:border-burgundy pl-6 md:pl-8 py-2 space-y-2 transition-colors duration-300">
+                    <span class="font-mono text-xs text-dirty-dim uppercase">PRINCIPLE 04</span>
+                    <p class="text-xl md:text-2xl font-serif text-dirty-white leading-relaxed" data-ru="«Литература не обязана делать тебя счастливее или давать быстрый утешительный ответ.»" data-en="“Literature is under no obligation to make you happier or provide quick comforting answers.”">
+                        «Литература не обязана делать тебя счастливее или давать быстрый утешительный ответ.»
+                    </p>
+                </div>
+
+                <div class="border-l-2 border-fine hover:border-burgundy pl-6 md:pl-8 py-2 space-y-2 transition-colors duration-300">
+                    <span class="font-mono text-xs text-dirty-dim uppercase">PRINCIPLE 05</span>
+                    <p class="text-xl md:text-2xl font-serif text-dirty-white leading-relaxed" data-ru="«Хорошая история иногда должна оставить после себя немного неприятное, честное ощущение.»" data-en="“A good story sometimes ought to leave behind a slightly uncomfortable, honest sensation.”">
+                        «Хорошая история иногда должна оставить после себя немного неприятное, честное ощущение.»
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE FULL-WIDTH QUOTE ROTATOR SECTION -->
+    <section class="py-32 px-6 border-b border-fine bg-graphite-900/40 relative overflow-hidden flex flex-col justify-center items-center min-h-[50vh]">
+        <div class="max-w-4xl mx-auto text-center relative z-10 px-4">
+            <span class="text-[10px] font-mono tracking-[0.4em] uppercase text-dirty-dim block mb-8" data-ru="ЦИТАТА ДНЯ / REFLECTION" data-en="QUOTE ROTATOR / REFLECTION">ЦИТАТА ДНЯ / REFLECTION</span>
+            
+            <!-- Dynamic Quote Display -->
+            <p id="quote-display" class="text-2xl sm:text-3xl md:text-4xl font-serif italic text-dirty-white leading-relaxed transition-opacity duration-700 min-h-[120px] flex items-center justify-center">
+                «Иногда человеку нужно потерять всё своё прошлое, чтобы наконец понять, что оно вообще было его.»
+            </p>
+
+            <div class="mt-8 flex items-center justify-center space-x-4">
+                <button id="prev-quote" class="p-2 border border-fine text-dirty-dim hover:text-dirty-white hover:border-burgundy transition-colors rounded-sm">←</button>
+                <span id="quote-counter" class="text-xs font-mono text-dirty-dim">1 / 4</span>
+                <button id="next-quote" class="p-2 border border-fine text-dirty-dim hover:text-dirty-white hover:border-burgundy transition-colors rounded-sm">→</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: ABOUT AUTHOR -->
+    <section id="about" class="py-32 px-6 max-w-7xl mx-auto w-full border-b border-fine">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start reveal">
+            
+            <!-- Left Header -->
+            <div class="lg:col-span-4">
+                <span class="text-xs font-mono tracking-[0.3em] uppercase text-burgundy block mb-2" data-ru="04 // БИОГРАФИЯ" data-en="04 // BIOGRAPHY">04 // БИОГРАФИЯ</span>
+                <h2 class="text-3xl md:text-5xl font-display font-bold uppercase text-dirty-white mb-6" data-ru="О Б  А В Т О Р Е" data-en="ABOUT AUTHOR">О Б  А В Т О Р Е</h2>
+                
+                <div class="space-y-3 font-mono text-xs text-dirty-dim border-t border-fine pt-6">
+                    <p><strong class="text-dirty-white" data-ru="Имя:" data-en="Name:">Имя:</strong> Jack Alexander Valden</p>
+                    <p><strong class="text-dirty-white" data-ru="Год рождения:" data-en="Year of Birth:">Год рождения:</strong> 2008</p>
+                    <p><strong class="text-dirty-white" data-ru="Язык творчества:" data-en="Language:">Язык творчества:</strong> Русский / Russian</p>
+                    <p><strong class="text-dirty-white" data-ru="Формы:" data-en="Forms:">Формы:</strong> Роман, повесть, эссе</p>
+                </div>
+            </div>
+
+            <!-- Right Content / Context -->
+            <div class="lg:col-span-8 space-y-8 text-dirty-muted font-light leading-relaxed">
+                
+                <p class="text-base sm:text-lg text-dirty-white/90 font-serif" data-ru="Jack Alexander Valden — молодой русскоязычный писатель, исследующий темы человека, одиночества, отчуждения, внутренней пустоты, взросления, семейных травм, страха и абсурда повседневности." data-en="Jack Alexander Valden is a young Russian-speaking author exploring themes of identity, loneliness, alienation, internal emptiness, growing up, family trauma, and the absurdity of daily routine.">
+                    Jack Alexander Valden — молодой русскоязычный писатель, исследующий темы человека, одиночества, отчуждения, внутренней пустоты, взросления, семейных травм, страха и абсурда повседневности.
+                </p>
+
+                <p class="text-sm sm:text-base" data-ru="Пишет прозу о людях, которые пытаются найти собственный стержень, пока окружающий мир продолжает делать вид, что всё находится под контролем." data-en="Writes prose about individuals attempting to find their own inner core while the surrounding world continues to pretend that everything is completely under control.">
+                    Пишет прозу о людях, которые пытаются найти собственный стержень, пока окружающий мир продолжает делать вид, что всё находится под контролем.
+                </p>
+
+                <!-- Literary Context Reference Points (Not fan list, purely editorial context) -->
+                <div class="pt-8 border-t border-fine">
+                    <h3 class="text-xs font-mono text-dirty-dim uppercase tracking-widest mb-4" data-ru="ЛИТЕРАТУРНЫЙ КОНТЕКСТ И ОРИЕНТИРЫ" data-en="LITERARY CONTEXT & INFLUENCES">
+                        ЛИТЕРАТУРНЫЙ КОНТЕКСТ И ОРИЕНТИРЫ
+                    </h3>
+                    
+                    <div class="flex flex-wrap gap-3 font-mono text-xs">
+                        <span class="px-3 py-1.5 border border-fine text-dirty-white rounded-sm">Фёдор Достоевский</span>
+                        <span class="px-3 py-1.5 border border-fine text-dirty-white rounded-sm">Франц Кафка</span>
+                        <span class="px-3 py-1.5 border border-fine text-dirty-white rounded-sm">Чак Паланик</span>
+                        <span class="px-3 py-1.5 border border-fine text-dirty-white rounded-sm">Герман Гессе</span>
+                        <span class="px-3 py-1.5 border border-fine text-dirty-white rounded-sm">Джек Лондон</span>
+                        <span class="px-3 py-1.5 border border-fine text-dirty-white rounded-sm">Стивен Кинг</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-16 px-6 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-fine pb-12">
+            <div>
+                <span class="text-lg font-display font-bold text-dirty-white block mb-1">JACK ALEXANDER VALDEN</span>
+                <p class="text-xs font-mono text-dirty-dim" data-ru="Написано где-то между вымыслом и реальностью." data-en="Written somewhere between fiction and reality.">
+                    Написано где-то между вымыслом и реальностью.
+                </p>
+            </div>
+
+            <!-- Minimal Text-only Social Links (No huge icons) -->
+            <div class="flex items-center space-x-8 text-xs font-mono uppercase">
+                <a href="https://t.me" target="_blank" rel="noopener" class="text-dirty-muted hover:text-burgundy transition-colors link-underline">Telegram</a>
+                <a href="https://tiktok.com" target="_blank" rel="noopener" class="text-dirty-muted hover:text-burgundy transition-colors link-underline">TikTok</a>
+                <a href="https://instagram.com" target="_blank" rel="noopener" class="text-dirty-muted hover:text-burgundy transition-colors link-underline">Instagram</a>
+            </div>
+        </div>
+
+        <div class="pt-8 flex flex-col sm:flex-row justify-between items-center text-[11px] font-mono text-dirty-dim">
+            <p>JACK ALEXANDER VALDEN © 2026. ALL RIGHTS RESERVED.</p>
+            <p class="mt-2 sm:mt-0" data-ru="АРХИВНАЯ ВЕРСИЯ 2.0.26" data-en="ARCHIVAL VERSION 2.0.26">АРХИВНАЯ ВЕРСИЯ 2.0.26</p>
+        </div>
+    </footer>
+
+    <!-- READING OVERLAY MODAL -->
+    <div id="reader-modal" class="fixed inset-0 z-50 bg-graphite-950/95 backdrop-cold hidden flex flex-col justify-between overflow-y-auto transition-opacity duration-300">
+        
+        <!-- Reader Header Bar -->
+        <div class="sticky top-0 z-20 bg-graphite-950/90 border-b border-fine px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <span class="text-xs font-mono text-burgundy font-bold uppercase" id="reader-category">BOOK EXCERPT</span>
+                <span class="text-dirty-dim font-mono text-xs">/</span>
+                <span class="text-xs font-mono text-dirty-white" id="reader-title">Стержень.</span>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <!-- Font size adjuster -->
+                <div class="hidden sm:flex items-center space-x-2 font-mono text-xs text-dirty-dim">
+                    <button onclick="changeFontSize(-1)" class="px-2 py-1 border border-fine hover:text-dirty-white">-</button>
+                    <span>SIZE</span>
+                    <button onclick="changeFontSize(1)" class="px-2 py-1 border border-fine hover:text-dirty-white">+</button>
+                </div>
+
+                <button onclick="closeReader()" class="text-xs font-mono text-dirty-white hover:text-burgundy tracking-widest uppercase flex items-center gap-2">
+                    <span data-ru="ЗАКРЫТЬ [ESC]" data-en="CLOSE [ESC]">ЗАКРЫТЬ [ESC]</span>
+                    <span>✕</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Reader Text Canvas -->
+        <div class="max-w-3xl mx-auto px-6 py-16 w-full flex-grow">
+            <div id="reader-meta" class="mb-12 border-b border-fine pb-6 text-xs font-mono text-dirty-dim flex justify-between">
+                <span id="reader-date">2026.03.01</span>
+                <span id="reader-time">5 MIN READ</span>
+            </div>
+
+            <!-- Reading Body -->
+            <div id="reader-body" class="reader-content font-serif text-dirty-white/90 text-lg sm:text-xl leading-relaxed">
+                <!-- Dynamic text injects here -->
+            </div>
+        </div>
+
+        <!-- Reader Footer -->
+        <div class="border-t border-fine p-6 text-center text-xs font-mono text-dirty-dim">
+            <span>JACK ALEXANDER VALDEN — ARCHIVE READER</span>
+        </div>
+    </div>
+
+    <!-- PREORDER / FIND BOOK MODAL -->
+    <div id="preorder-modal" class="fixed inset-0 z-50 bg-graphite-950/90 backdrop-cold hidden flex items-center justify-center p-6">
+        <div class="bg-graphite-900 border border-fine p-8 max-w-md w-full rounded-sm relative">
+            <button onclick="closePreorderModal()" class="absolute top-4 right-4 text-xs font-mono text-dirty-dim hover:text-dirty-white">✕</button>
+            
+            <span class="text-xs font-mono text-burgundy uppercase block mb-2" data-ru="ГДЕ НАЙТИ КНИГУ" data-en="WHERE TO FIND THE BOOK">ГДЕ НАЙТИ КНИГУ</span>
+            <h3 class="text-2xl font-serif text-dirty-white mb-4" data-ru="«Стержень.»" data-en="“The Core.”">«Стержень.»</h3>
+            
+            <p class="text-xs text-dirty-muted leading-relaxed mb-6 font-light" data-ru="Роман доступен в ограниченном авторском тираже и в крупных книжных сетях, а также в электронных библиотеках." data-en="The novel is available in limited author print runs and major bookstore chains, as well as electronic library archives.">
+                Роман доступен в ограниченном авторском тираже и в крупных книжных сетях, а также в электронных библиотеках.
+            </p>
+
+            <div class="space-y-3 font-mono text-xs">
+                <a href="#" onclick="event.preventDefault(); alert('Переход в книжный каталог...');" class="block p-3 border border-fine hover:border-burgundy text-dirty-white text-center transition-colors">ЛИТРЕС / ЭЛЕКТРОННАЯ ВЕРСИЯ</a>
+                <a href="#" onclick="event.preventDefault(); alert('Переход в оформление печатного тиража...');" class="block p-3 border border-fine hover:border-burgundy text-dirty-white text-center transition-colors">ПЕЧАТНЫЙ ТИРАЖ (OZN / WILDBERRIES)</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // Canvas Noise Grain Effect Generator
+        const canvas = document.getElementById('grain-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function generateGrain() {
+            const w = canvas.width;
+            const h = canvas.height;
+            const imgData = ctx.createImageData(w, h);
+            const buffer = new Uint32Array(imgData.data.buffer);
+
+            for (let i = 0; i < buffer.length; i++) {
+                if (Math.random() < 0.12) {
+                    const noise = Math.floor(Math.random() * 255);
+                    buffer[i] = (255 << 24) | (noise << 16) | (noise << 8) | noise;
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+            requestAnimationFrame(generateGrain);
+        }
+        generateGrain();
+
+        // Web Audio API Vinyl/Tape Grain Sound Generator
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let noiseNode = null;
+        let gainNode = null;
+
+        function toggleAmbientAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+
+            const label = document.getElementById('audio-label');
+            const indicator = document.getElementById('audio-indicator');
+
+            if (!isAudioPlaying) {
+                // Create tape/vinyl noise
+                const bufferSize = audioCtx.sampleRate * 2;
+                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = (Math.random() * 2 - 1) * 0.015; // Very subtle pinkish noise
+                }
+
+                noiseNode = audioCtx.createBufferSource();
+                noiseNode.buffer = noiseBuffer;
+                noiseNode.loop = true;
+
+                // Lowpass Filter for warmth
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+
+                gainNode = audioCtx.createGain();
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+
+                noiseNode.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                noiseNode.start();
+                isAudioPlaying = true;
+
+                label.innerText = 'ATMOSPHERE: ON';
+                indicator.classList.remove('bg-dirty-dim');
+                indicator.classList.add('bg-burgundy', 'animate-pulse');
+            } else {
+                if (gainNode) {
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+                    setTimeout(() => {
+                        if (noiseNode) noiseNode.stop();
+                        isAudioPlaying = false;
+                    }, 500);
+                }
+                label.innerText = 'ATMOSPHERE: OFF';
+                indicator.classList.remove('bg-burgundy', 'animate-pulse');
+                indicator.classList.add('bg-dirty-dim');
+            }
+        }
+
+        document.getElementById('audio-toggle').addEventListener('click', toggleAmbientAudio);
+
+        // RU / EN Bilingual State Switcher
+        let currentLang = 'RU';
+
+        const langRuBtn = document.getElementById('lang-ru');
+        const langEnBtn = document.getElementById('lang-en');
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            if (lang === 'RU') {
+                langRuBtn.classList.add('text-dirty-white', 'font-bold');
+                langRuBtn.classList.remove('text-dirty-dim');
+                langEnBtn.classList.add('text-dirty-dim');
+                langEnBtn.classList.remove('text-dirty-white', 'font-bold');
+            } else {
+                langEnBtn.classList.add('text-dirty-white', 'font-bold');
+                langEnBtn.classList.remove('text-dirty-dim');
+                langRuBtn.classList.add('text-dirty-dim');
+                langRuBtn.classList.remove('text-dirty-white', 'font-bold');
+            }
+
+            // Translate all elements with data-ru and data-en
+            document.querySelectorAll('[data-ru]').forEach(el => {
+                if (lang === 'RU') {
+                    el.innerText = el.getAttribute('data-ru');
+                } else if (el.getAttribute('data-en')) {
+                    el.innerText = el.getAttribute('data-en');
+                }
+            });
+        }
+
+        langRuBtn.addEventListener('click', () => setLanguage('RU'));
+        langEnBtn.addEventListener('click', () => setLanguage('EN'));
+
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        const quotesList = [
+            {
+                ru: "«Иногда человеку нужно потерять всё своё прошлое, чтобы наконец понять, что оно вообще было его.»",
+                en: "“Sometimes a person needs to lose their entire past to finally understand that it was ever theirs at all.”"
+            },
+            {
+                ru: "«Семья — это единственное место, где тебя могут любить и разрушать одновременно одной и той же фразой.»",
+                en: "“Family is the only place where you can be loved and destroyed simultaneously by the exact same sentence.”"
+            },
+            {
+                ru: "«Одиночество — это не когда тебя никто не слышит. Это когда вокруг слишком много звуков, но ни один из них не обращён к тебе.»",
+                en: "“Loneliness is not when no one hears you. It is when there are too many sounds around, yet none are directed at you.”"
+            },
+            {
+                ru: "«Самый глубокий абсурд начинается тогда, когда ты пытаешься найти логику там, где присутствовал только страх.»",
+                en: "“The deepest absurdity begins when you try to find logic where only fear was present.”"
+            }
+        ];
+
+        let currentQuoteIndex = 0;
+        const quoteDisplay = document.getElementById('quote-display');
+        const quoteCounter = document.getElementById('quote-counter');
+
+        function updateQuote(index) {
+            quoteDisplay.style.opacity = '0';
+            setTimeout(() => {
+                const q = quotesList[index];
+                quoteDisplay.innerText = currentLang === 'RU' ? q.ru : q.en;
+                quoteCounter.innerText = `${index + 1} / ${quotesList.length}`;
+                quoteDisplay.style.opacity = '1';
+            }, 300);
+        }
+
+        document.getElementById('prev-quote').addEventListener('click', () => {
+            currentQuoteIndex = (currentQuoteIndex - 1 + quotesList.length) % quotesList.length;
+            updateQuote(currentQuoteIndex);
+        });
+
+        document.getElementById('next-quote').addEventListener('click', () => {
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotesList.length;
+            updateQuote(currentQuoteIndex);
+        });
+
+        const readerModal = document.getElementById('reader-modal');
+        const readerTitle = document.getElementById('reader-title');
+        const readerCategory = document.getElementById('reader-category');
+        const readerDate = document.getElementById('reader-date');
+        const readerBody = document.getElementById('reader-body');
+        let currentFontSize = 18;
+
+        const archiveData = {
+            sterzhen: {
+                titleRu: "Стержень. (Отрывок из 1 главы)",
+                titleEn: "The Core (Chapter 1 Excerpt)",
+                category: "BOOK EXCERPT",
+                date: "2026.03.01",
+                time: "6 MIN READ",
+                bodyRu: `
+                    <p>Дом никогда не был местом, где можно было спрятаться. Он был скорее отправной точкой, из которой требовалось бежать — хотя бы мысленно, пока дверь в детскую оставалась приоткрытой.</p>
+                    <p>Отец всегда говорил тихим голосом. Ужас этого голоса заключался не в том, что он выражал гнев, а в том, что в нём абсолютно отсутствовало сомнение. Он знал точно, каким должен быть каждый из нас. И когда кто-то из нас смел отличаться от этого внутреннего чертежа, отец не злился. Он искренне искренне удивлялся, словно столкнулся с поломкой мебели.</p>
+                    <p>— Человек без стержня — это просто кусок мягкого материала, — повторил он однажды вечером за обедом. — На него опираешься, а он проминается.</p>
+                    <p>Я смотрел на свою тарелку и думал о том, что стержень, о котором он говорит, вкладывается не любовью. Он вбивается железными гвоздями до тех пор, пока человек не перестаёт чувствовать боль от каждого движения.</p>
+                `,
+                bodyEn: `
+                    <p>Home was never a place to hide. It was rather a starting point from which one needed to escape—if only mentally, while the nursery door remained slightly ajar.</p>
+                    <p>Father always spoke in a quiet voice. The terror of that voice lay not in its anger, but in its absolute lack of doubt. He knew precisely what each of us should be. And when one of us dared to deviate from that internal blueprint, father didn't get angry. He was genuinely astonished, as if confronting broken furniture.</p>
+                    <p>“A person without a core is merely a piece of soft material,” he repeated one evening over dinner. “You lean on it, and it gives way.”</p>
+                    <p>I stared at my plate and thought that the core he spoke of is not instilled by love. It is hammered in with iron nails until a person ceases to feel the pain of every movement.</p>
+                `
+            },
+            chuzhak: {
+                titleRu: "Чужак (Черновой отрывок)",
+                titleEn: "The Stranger (Draft Excerpt)",
+                category: "DRAFT NOVELLA",
+                date: "2026.02.20",
+                time: "4 MIN READ",
+                bodyRu: `
+                    <p>Ключ повернулся в замке со знакомым металлическим скрежетом. Этот звук я помнил последние пятнадцать лет.</p>
+                    <p>Прихожая пахла так же: старой бумагой, сухими лекарственными травами и чем-то неуловимо холодным. Всё стояло на своих местах — тот же деревянный комод, та же вешалка с двумя оставленными пальто. Но когда я переступил порог, меня не покидало ощущение, что я зашёл в музей чужой жизни.</p>
+                    <p>Комната сжалась. То, что в детстве казалось огромным залом, оказалось всего лишь тесной коробкой с беленым потолком. Пространства для меня здесь больше не осталось.</p>
+                `,
+                bodyEn: `
+                    <p>The key turned in the lock with a familiar metallic rasp. A sound I had remembered for the last fifteen years.</p>
+                    <p>The hallway smelled the same: old paper, dry medicinal herbs, and something subtly cold. Everything stood in its place—the same wooden chest, the same coat rack with two abandoned coats. Yet as I crossed the threshold, I couldn't shake the feeling that I had entered a museum of someone else's life.</p>
+                    <p>The room had shrunk. What felt like an immense hall in childhood turned out to be merely a cramped box with a whitewashed ceiling. There was simply no space left for me here.</p>
+                `
+            },
+            1: {
+                titleRu: "01 — Муть",
+                titleEn: "01 — Dregs",
+                category: "FRAGMENT",
+                date: "2026.02.14",
+                time: "2 MIN READ",
+                bodyRu: `
+                    <p>Бывают дни, когда мысли не приобретают форму слова. Они остаются липким осадком на дне сознания. Ты пытаешься сформулировать, что именно не так, но получаешь лишь шум.</p>
+                    <p>В такие моменты лучше всего не пытаться ничего исправить. Пусть осядет. Муть имеет свойство становиться прозрачной, если перестать взбалтывать воду.</p>
+                `,
+                bodyEn: `
+                    <p>There are days when thoughts fail to take the shape of words. They remain sticky sediment at the bottom of consciousness. You try to articulate what exactly is wrong, but arrive only at noise.</p>
+                    <p>In such moments, it is best not to attempt any repairs. Let it settle. Dregs have a way of turning clear if you stop stirring the water.</p>
+                `
+            },
+            2: {
+                titleRu: "02 — О человеке, который слишком долго молчал",
+                titleEn: "02 — On the man who was silent for too long",
+                category: "ESSAY",
+                date: "2026.01.29",
+                time: "3 MIN READ",
+                bodyRu: `
+                    <p>Молчание — это не отсутствие звука. Это присутствие накопившейся тяжести, которую некому передать.</p>
+                    <p>Когда человек долго молчит, окружающие начинают думать, что у него нет собственного мнения. На самом же деле у него просто больше нет желания тратить слова на тех, кто всё равно услышит только эхо собственных мыслей.</p>
+                `,
+                bodyEn: `
+                    <p>Silence is not the absence of sound. It is the presence of accumulated weight with no recipient.</p>
+                    <p>When a person stays quiet for a long time, those around them begin to think they have no opinion of their own. In reality, they simply no longer possess the desire to waste words on people who will only hear echoes of their own thoughts anyway.</p>
+                `
+            },
+            3: {
+                titleRu: "03 — Без названия",
+                titleEn: "03 — Untitled",
+                category: "FRAGMENT",
+                date: "2025.11.18",
+                time: "2 MIN READ",
+                bodyRu: `
+                    <p>Мы учимся скрывать свои шрамы не потому, что стыдимся их, а потому что устали отвечать на глупые вопросы тех, кто никогда не знал такой боли.</p>
+                    <p>Личность создаётся не из победительных моментов. Она собирается из того, что уцелело, когда рухнули все надежды.</p>
+                `,
+                bodyEn: `
+                    <p>We learn to hide our scars not out of shame, but because we are tired of answering foolish questions from those who have never known such pain.</p>
+                    <p>Persona is not created from moments of victory. It is assembled from whatever survived when all hopes collapsed.</p>
+                `
+            },
+            4: {
+                titleRu: "04 — Осколки родства",
+                titleEn: "04 — Shards of Kinship",
+                category: "NOTE ON FAMILY",
+                date: "2025.09.04",
+                time: "4 MIN READ",
+                bodyRu: `
+                    <p>Семья — это единственное место на земле, где тебе могут одновременно дать укрытие и выбить землю из-под ног.</p>
+                    <p>Травма, полученная в семье, отличается тем, что у неё нет четкого агрессора. Все делали «как лучше». Все хотели «добра». Но в итоге ребенок вырастает в комнате со стенами из битого стекла.</p>
+                `,
+                bodyEn: `
+                    <p>Family is the only place on earth where you can simultaneously be given shelter and swept off your feet.</p>
+                    <p>Trauma received within a family is unique because it lacks a clear villain. Everyone acted 'for the best.' Everyone wished 'well.' Yet in the end, the child grows up inside a room walled with broken glass.</p>
+                `
+            }
+        };
+
+        function openReader(key) {
+            const data = archiveData[key];
+            if (!data) return;
+
+            readerTitle.innerText = currentLang === 'RU' ? data.titleRu : data.titleEn;
+            readerCategory.innerText = data.category;
+            readerDate.innerText = data.date;
+            readerBody.innerHTML = currentLang === 'RU' ? data.bodyRu : data.bodyEn;
+
+            readerModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openArchiveText(num) {
+            openReader(num);
+        }
+
+        function closeReader() {
+            readerModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function changeFontSize(delta) {
+            currentFontSize = Math.max(14, Math.min(26, currentFontSize + delta));
+            readerBody.style.fontSize = `${currentFontSize}px`;
+        }
+
+        // Keyboard navigation for Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeReader();
+                closePreorderModal();
+            }
+        });
+
+        // Preorder modal functions
+        function openPreorderModal() {
+            document.getElementById('preorder-modal').classList.remove('hidden');
+        }
+
+        function closePreorderModal() {
+            document.getElementById('preorder-modal').classList.add('hidden');
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
