@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://inv-systems.com/sitemap.xml
